@@ -1,0 +1,2629 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Belajar Pemrograman Web — TKJ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0D1117;
+  --bg-alt:#0A0E14;
+  --panel:#111826;
+  --card:#141C2B;
+  --line:#232D42;
+  --line-soft:#1A2335;
+  --text:#DCE3F0;
+  --text-dim:#8B97B3;
+  --text-faint:#57628A;
+  --html-c:#E8823C;
+  --css-c:#4FA3E3;
+  --js-c:#E8C547;
+  --db-c:#9D7CE8;
+  --srv-c:#5EEAD4;
+  --serif:'Fraunces',serif;
+  --mono:'JetBrains Mono',monospace;
+  --sidebar-w:290px;
+}
+*{ box-sizing:border-box; }
+html{ scroll-behavior:smooth; }
+body{
+  margin:0; background:var(--bg); color:var(--text);
+  font-family:var(--mono); font-size:14.5px; line-height:1.65;
+}
+::selection{ background:var(--js-c); color:#1A1206; }
+a{ color:inherit; }
+
+/* ============ LAYOUT SHELL ============ */
+.shell{ display:flex; min-height:100vh; }
+
+/* ---- sidebar ---- */
+.sidebar{
+  width:var(--sidebar-w); flex-shrink:0;
+  background:var(--bg-alt); border-right:1px solid var(--line-soft);
+  position:sticky; top:0; height:100vh; overflow-y:auto;
+  padding-bottom:40px;
+  scrollbar-width:thin; scrollbar-color:var(--line) transparent;
+  z-index:60;
+}
+.sidebar::-webkit-scrollbar{ width:6px; }
+.sidebar::-webkit-scrollbar-thumb{ background:var(--line); border-radius:3px; }
+
+.brand{
+  padding:22px 20px 16px; border-bottom:1px solid var(--line-soft);
+  position:sticky; top:0; background:var(--bg-alt); z-index:2;
+}
+.brand .dots{ display:flex; gap:6px; margin-bottom:12px; }
+.brand .dots span{ width:9px; height:9px; border-radius:50%; display:block; }
+.brand .dots span:nth-child(1){ background:#F0876B; }
+.brand .dots span:nth-child(2){ background:#E8C547; }
+.brand .dots span:nth-child(3){ background:#5EEAD4; }
+.brand h1{
+  font-family:var(--serif); font-weight:600; font-size:18px; margin:0 0 4px; color:#fff;
+  line-height:1.3;
+}
+.brand p{ margin:0; font-size:11.5px; color:var(--text-faint); }
+
+.chapter-list{ padding:10px 0; }
+.chapter{ margin-bottom:2px; }
+.chapter-head{
+  display:flex; align-items:center; gap:10px;
+  width:100%; background:none; border:none; text-align:left; cursor:pointer;
+  padding:11px 20px; color:var(--text); font-family:var(--mono); font-size:13px; font-weight:600;
+  transition:.15s;
+}
+.chapter-head:hover{ background:var(--panel); }
+.chapter-head .chip{
+  width:22px; height:22px; border-radius:6px; display:flex; align-items:center; justify-content:center;
+  font-size:10.5px; font-weight:700; flex-shrink:0; color:#0D1117;
+}
+.chapter-head .arrow{ margin-left:auto; color:var(--text-faint); font-size:10px; transition:transform .2s; }
+.chapter.open .chapter-head .arrow{ transform:rotate(90deg); }
+.chapter-head .ctitle{ flex:1; }
+.chapter-head .ctitle small{ display:block; font-weight:400; color:var(--text-faint); font-size:10px; margin-top:1px;}
+
+.sub-list{
+  max-height:0; overflow:hidden; transition:max-height .25s ease;
+}
+.chapter.open .sub-list{ max-height:1400px; }
+.sub-list a{
+  display:flex; align-items:center; gap:9px;
+  padding:8px 20px 8px 50px; font-size:12.3px; color:var(--text-dim);
+  text-decoration:none; border-left:2px solid transparent; transition:.12s;
+}
+.sub-list a:hover{ color:#fff; background:var(--panel); }
+.sub-list a.active{ color:#fff; border-left-color:var(--js-c); background:var(--panel); }
+.sub-list a .lvl{
+  font-size:9px; padding:1px 5px; border-radius:4px; flex-shrink:0;
+  border:1px solid var(--line); color:var(--text-faint);
+}
+.sub-list a.nested{ padding-left:64px; font-size:11.5px; }
+.sub-list a.nested::before{ content:"–"; margin-right:5px; color:var(--text-faint); }
+
+/* ---- main content ---- */
+.main{ flex:1; min-width:0; }
+.topbar{
+  display:none;
+  position:sticky; top:0; z-index:50;
+  align-items:center; gap:12px; padding:12px 18px;
+  background:rgba(13,17,23,0.92); backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--line-soft);
+}
+.topbar button{
+  background:var(--panel); border:1px solid var(--line); color:var(--text);
+  width:36px; height:36px; border-radius:8px; font-size:16px; cursor:pointer;
+}
+.topbar .tb-title{ font-size:13px; color:var(--text-dim); }
+
+.hero{
+  max-width:1180px; margin:0 auto; padding:70px 32px 30px;
+}
+.hero .eyebrow{ display:flex; align-items:center; gap:10px; color:var(--text-faint); font-size:12px; margin-bottom:20px;}
+.hero .eyebrow .bar{ width:26px; height:1px; background:var(--line); }
+.hero h1{
+  font-family:var(--serif); font-weight:600; font-size:clamp(30px,4.6vw,50px);
+  line-height:1.1; margin:0 0 20px; color:#fff; max-width:16ch;
+}
+.hero h1 em{ font-style:italic; color:var(--js-c); font-weight:500; }
+.hero p.lead{ max-width:60ch; color:var(--text-dim); font-size:15px; line-height:1.75; margin:0 0 30px; }
+.hero .chapter-grid{
+  display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:1px;
+  background:var(--line-soft); border:1px solid var(--line-soft); border-radius:10px; overflow:hidden; margin-top:10px;
+}
+.hero .chapter-grid a{
+  background:var(--card); padding:18px 20px; text-decoration:none; color:var(--text);
+  display:flex; flex-direction:column; gap:6px; transition:.15s;
+}
+.hero .chapter-grid a:hover{ background:var(--panel); }
+.hero .chapter-grid .n{ font-family:var(--serif); font-size:13px; color:var(--text-faint); }
+.hero .chapter-grid .t{ font-size:14px; font-weight:600; color:#fff; }
+.hero .chapter-grid .d{ font-size:11.5px; color:var(--text-faint); }
+
+/* ---- bab section ---- */
+.bab{
+  max-width:1180px; margin:0 auto; padding:60px 32px 20px;
+  position:relative;
+  scroll-margin-top:20px;
+}
+.bab::before{
+  content:"";
+  position:absolute; top:0; left:32px; right:32px; height:3px;
+  background:linear-gradient(90deg, var(--bab-glow,#5EEAD4), transparent 70%);
+  box-shadow:0 0 16px 1px var(--bab-glow,#5EEAD4);
+  border-radius:2px;
+}
+.bab .bab-head .bnum{ color:var(--bab-glow,#5EEAD4); }
+.bab-head{ margin-bottom:36px; }
+.bab-head .bnum{ font-family:var(--serif); font-size:14px; color:var(--text-faint); margin-bottom:8px; display:block;}
+.bab-head h2{ font-family:var(--serif); font-weight:600; font-size:34px; margin:0 0 12px; color:#fff; }
+.bab-head p{ color:var(--text-dim); max-width:65ch; font-size:14.5px; margin:0; }
+
+/* ---- materi (subbab) ---- */
+.materi{
+  margin-bottom:56px; padding-bottom:6px;
+  scroll-margin-top:20px;
+}
+.materi-head{ display:flex; align-items:flex-start; gap:14px; margin-bottom:6px; flex-wrap:wrap; }
+.materi-head h3{ font-family:var(--serif); font-weight:600; font-size:22px; margin:0; color:#fff; flex:1; min-width:200px; }
+.badge-lvl{
+  font-size:10px; padding:3px 9px; border-radius:20px; border:1px solid var(--line);
+  color:var(--text-faint); white-space:nowrap; align-self:center;
+}
+.badge-lvl.dasar{ border-color:rgba(94,234,212,0.3); color:#5EEAD4; }
+.badge-lvl.menengah{ border-color:rgba(232,197,71,0.35); color:#E8C547; }
+.badge-lvl.lanjut{ border-color:rgba(240,135,107,0.35); color:#F0876B; }
+
+.materi .desc{
+  color:var(--text-dim); max-width:72ch; font-size:14px; margin:12px 0 20px;
+  border-left:2px solid var(--line); padding-left:15px;
+}
+.materi .desc strong{ color:#fff; font-weight:600; }
+.materi .desc code{ color:var(--js-c); background:rgba(232,197,71,0.08); padding:1px 5px; border-radius:4px; font-size:12.5px;}
+
+/* ---- sub-materi (nested topic inside a materi, e.g. Gambar / Audio / Video inside Multimedia) ---- */
+.sub-materi{
+  margin:28px 0 0; padding:22px 0 0; border-top:1px dashed var(--line-soft);
+}
+.sub-materi:first-of-type{ border-top:none; padding-top:0; margin-top:22px; }
+.sub-materi-head{ display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+.sub-materi-head .snum{
+  width:24px; height:24px; border-radius:7px; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
+  font-size:11px; font-weight:700; background:var(--panel); border:1px solid var(--line); color:var(--text-dim);
+}
+.sub-materi-head h4{ font-family:var(--serif); font-weight:600; font-size:17px; margin:0; color:#fff; }
+.sub-materi .desc{ margin:0 0 16px; }
+
+/* ---- code lab (editor + preview) ---- */
+.lab{
+  border:1px solid var(--line-soft); border-radius:10px; overflow:hidden; background:var(--bg-alt);
+}
+.lab-grid{ display:grid; grid-template-columns:1fr 1fr; }
+@media (max-width:840px){ .lab-grid{ grid-template-columns:1fr; } }
+.lab-pane{ display:flex; flex-direction:column; min-width:0; position:relative; }
+.lab-pane + .lab-pane{ border-left:1px solid var(--line-soft); }
+@media (max-width:840px){ .lab-pane + .lab-pane{ border-left:none; border-top:1px solid var(--line-soft); } }
+
+/* syntax highlight colors, used only in the static "penjelasan kode" boxes below each lab */
+.hl-tag{ color:#7DA3E0; }
+.hl-attr{ color:#E8B34A; }
+.hl-str{ color:#B7E29A; }
+.hl-cmt{ color:#5A6690; font-style:italic; }
+.hl-punc{ color:#8B97B3; }
+.hl-css-sel{ color:#7DA3E0; }
+.hl-css-prop{ color:#E8B34A; }
+.hl-css-val{ color:#B7E29A; }
+.hl-js-kw{ color:#C792EA; }
+.hl-js-str{ color:#B7E29A; }
+.hl-js-num{ color:#F0876B; }
+.hl-js-cmt{ color:#5A6690; font-style:italic; }
+
+.lab-label{
+  display:flex; align-items:center; justify-content:space-between; gap:8px;
+  padding:8px 14px; font-size:11px; color:var(--text-faint); background:var(--panel);
+  border-bottom:1px solid var(--line-soft);
+}
+.lab-label .lt{ display:flex; align-items:center; gap:7px; }
+.lab-label .dot{ width:7px; height:7px; border-radius:50%; }
+.lab-btns{ display:flex; gap:6px; }
+.lab-btns button{
+  font-family:var(--mono); font-size:10.5px; padding:4px 10px; border-radius:5px; cursor:pointer;
+  border:1px solid var(--line); background:transparent; color:var(--text-faint); transition:.15s;
+}
+.lab-btns button:hover{ color:#fff; border-color:var(--text-faint); }
+.lab-btns button.run-btn:hover{ color:#0D1117; background:var(--js-c); border-color:var(--js-c); }
+.lab-btns button.reset-btn:hover{ color:#0D1181; background:var(--text-faint); }
+.lab-btns button.copied{ color:#5EEAD4 !important; border-color:#5EEAD4 !important; background:none !important; }
+
+textarea.code-input{
+  display:block; flex:1; resize:vertical; width:100%;
+  min-height:340px; max-height:680px;
+  background:var(--bg-alt); color:#DCE3F0; border:none; outline:none;
+  font-family:var(--mono); font-size:13.2px; line-height:1.75; padding:18px;
+  white-space:pre; tab-size:2;
+}
+iframe.result-frame{ flex:1; min-height:340px; max-height:680px; border:none; background:#fff; width:100%; }
+
+/* ---- static "penjelasan kode" box under each lab ---- */
+.code-explain{
+  margin-top:14px; border:1px solid var(--line-soft); border-radius:8px; overflow:hidden;
+}
+.code-explain summary{
+  cursor:pointer; padding:10px 14px; background:var(--panel); font-size:12.5px; color:var(--text-dim);
+  list-style:none; display:flex; align-items:center; gap:8px; user-select:none;
+}
+.code-explain summary::-webkit-details-marker{ display:none; }
+.code-explain summary::before{ content:"▸"; color:var(--text-faint); font-size:10px; transition:transform .15s; }
+.code-explain[open] summary::before{ transform:rotate(90deg); }
+.code-explain summary b{ color:#fff; font-weight:600; }
+.code-explain-body{ padding:14px 16px; font-size:12.8px; color:var(--text-dim); line-height:1.8; }
+.code-explain-body code{ color:var(--js-c); background:rgba(232,197,71,0.08); padding:1px 5px; border-radius:4px; font-size:12px; }
+.code-explain-body ul{ margin:0; padding-left:18px; }
+.code-explain-body li{ margin-bottom:6px; }
+.code-explain-body li:last-child{ margin-bottom:0; }
+
+.materi .note-box{
+  margin-top:16px; padding:12px 16px; border-radius:8px; font-size:12.6px;
+  background:rgba(232,197,71,0.06); border:1px solid rgba(232,197,71,0.22); color:#E8C547;
+}
+.materi .note-box.info{ background:rgba(79,163,227,0.07); border-color:rgba(79,163,227,0.25); color:#8FC3ED; }
+.materi .note-box b{ color:#fff; }
+
+.attr-table{ width:100%; border-collapse:collapse; margin-top:16px; font-size:12.5px; }
+.attr-table th{ text-align:left; color:var(--text-faint); font-weight:600; padding:6px 10px; border-bottom:1px solid var(--line); font-size:10.8px; }
+.attr-table td{ padding:7px 10px; border-bottom:1px solid var(--line-soft); color:var(--text-dim); }
+.attr-table td:first-child{ color:var(--js-c); white-space:nowrap; }
+
+footer{
+  max-width:1180px; margin:0 auto; padding:40px 32px 100px; color:var(--text-faint);
+  font-size:12px; border-top:1px solid var(--line-soft);
+}
+
+/* mobile */
+@media (max-width:960px){
+  .sidebar{ position:fixed; left:0; top:0; transform:translateX(-100%); transition:transform .25s ease; box-shadow:0 0 40px rgba(0,0,0,.5); z-index:70; }
+  .sidebar.open{ transform:translateX(0); }
+  .topbar{ display:flex; }
+  .overlay{ display:none; position:fixed; inset:0; background:rgba(0,0,0,.55); z-index:65; }
+  .overlay.show{ display:block; }
+}
+
+/* ============ SYNTAX HIGHLIGHTING ============ */
+.code-wrap{position:relative;flex:1;min-height:340px;background:var(--bg-alt);overflow:hidden}
+.code-wrap textarea.code-input{
+  position:relative;z-index:2;background:transparent;color:transparent;
+  -webkit-text-fill-color:transparent;caret-color:#fff;overflow:auto;
+  min-height:340px;height:100%;text-shadow:none;
+}
+.code-wrap .syntax-layer{
+  position:absolute;inset:0;z-index:1;margin:0;padding:18px;
+  overflow:auto;pointer-events:none;white-space:pre;font-family:var(--mono);
+  font-size:13.2px;line-height:1.75;color:#DCE3F0;tab-size:2;
+}
+.syn-tag{color:#7DA3E0}.syn-attr{color:#E8B34A}.syn-str{color:#B7E29A}
+.syn-cmt{color:#5A6690;font-style:italic}.syn-css-prop{color:#E8B34A}
+.syn-css-val{color:#B7E29A}.syn-js-kw{color:#C792EA}
+.syn-js-num{color:#F0876B}.syn-js-fn{color:#82AAFF}.syn-sql{color:#C792EA}
+.syn-sql-fn{color:#82AAFF}.syn-punc{color:#8B97B3}
+.code-wrap textarea::selection{background:rgba(232,197,71,.28);color:transparent;-webkit-text-fill-color:transparent}
+
+/* ============ KAMUS ATRIBUT ============ */
+.kamus-wrap{max-width:1180px;margin:0 auto;padding:70px 32px 30px;scroll-margin-top:20px}
+.kamus-hero{padding:28px;border:1px solid var(--line-soft);border-radius:12px;background:linear-gradient(135deg,rgba(79,163,227,.08),rgba(157,124,232,.07))}
+.kamus-hero .bnum{color:var(--css-c);font-size:12px}
+.kamus-hero h2{font-family:var(--serif);font-size:34px;color:#fff;margin:4px 0 8px}
+.kamus-hero p{color:var(--text-dim);margin:0;max-width:70ch}
+.kamus-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0 12px}
+.kamus-tab{font-family:var(--mono);font-size:12px;padding:9px 14px;border:1px solid var(--line);background:var(--panel);color:var(--text-dim);border-radius:7px;cursor:pointer}
+.kamus-tab:hover,.kamus-tab.active{color:#fff;border-color:var(--css-c);background:rgba(79,163,227,.1)}
+.kamus-panel{display:none;border:1px solid var(--line-soft);border-radius:10px;overflow:hidden;background:var(--bg-alt)}
+.kamus-panel.active{display:block}
+.kamus-panel-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;background:var(--panel);border-bottom:1px solid var(--line-soft)}
+.kamus-panel-head h3{font-family:var(--serif);font-size:18px;color:#fff;margin:0}
+.kamus-panel-head span{font-size:10px;color:var(--text-faint)}
+.kamus-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1px;background:var(--line-soft)}
+.kamus-grid a{background:var(--card);padding:12px 14px;text-decoration:none;transition:.15s}
+.kamus-grid a:hover{background:var(--panel);transform:translateY(-1px)}
+.kamus-grid b{display:block;color:var(--js-c);font-size:12px;margin-bottom:4px}
+.kamus-grid span{display:block;color:var(--text-dim);font-size:11.5px;line-height:1.55}
+.kamus-button-wrap{max-width:1180px;margin:0 auto;padding:10px 32px 34px;text-align:center}
+.kamus-main-button{display:inline-flex;align-items:center;justify-content:center;padding:13px 20px;border-radius:8px;border:1px solid var(--css-c);background:rgba(79,163,227,.08);color:#fff;text-decoration:none;font-weight:700;font-size:13px}
+.kamus-main-button:hover{background:var(--css-c);color:#08111c}
+.kamus-toggle-wrap{max-width:1180px;margin:0 auto;padding:4px 32px 18px;text-align:center}
+.kamus-toggle-button{font-family:var(--mono);display:inline-flex;align-items:center;gap:10px;padding:14px 24px;border:1px solid var(--css-c);border-radius:9px;background:linear-gradient(135deg,rgba(79,163,227,.16),rgba(157,124,232,.12));color:#fff;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 0 18px rgba(79,163,227,.08);transition:.18s}
+.kamus-toggle-button:hover{transform:translateY(-1px);background:linear-gradient(135deg,rgba(79,163,227,.24),rgba(157,124,232,.2))}
+.kamus-toggle-arrow{font-size:10px;color:var(--text-dim);transition:transform .2s}
+.kamus-toggle-button[aria-expanded="true"] .kamus-toggle-arrow{transform:rotate(180deg)}
+.kamus-wrap[hidden]{display:none}
+
+
+.kamus-label{font-family:var(--mono);font-size:10px;letter-spacing:.16em;color:var(--css-c);margin-bottom:8px;font-weight:700}
+.kamus-icon{font-size:18px;line-height:1}
+.kamus-hint{margin-top:8px;color:var(--text-dim);font-size:11px}
+.kamus-sidebar-item .chapter-head{border-color:rgba(79,163,227,.45)}
+.kamus-sidebar-item .chip{color:#08111c!important;font-weight:800}
+
+/* Allow the expanded CSS chapter to show all subtopics. */
+.chapter[data-chapter="bab3"] .sub-list{max-height:1800px}
+
+/* Keep the learning layout usable on compact phones and tablets. */
+@media (max-width:960px){
+  .sidebar{ width:min(var(--sidebar-w), calc(100vw - 48px)); max-width:100vw; }
+  .topbar{ padding:10px 16px; }
+}
+
+@media (max-width:600px){
+  body{ font-size:14px; }
+  .hero{ padding:38px 18px 22px; }
+  .hero .eyebrow{ font-size:10px; gap:7px; margin-bottom:14px; }
+  .hero h1{ font-size:clamp(28px, 8vw, 38px); margin-bottom:14px; }
+  .hero p.lead{ font-size:14px; margin-bottom:22px; }
+  .hero .chapter-grid{ grid-template-columns:minmax(0, 1fr); }
+  .hero .chapter-grid a{ padding:14px 16px; }
+  .bab{ padding:42px 18px 16px; scroll-margin-top:64px; }
+  .bab::before{ left:18px; right:18px; }
+  .bab-head{ margin-bottom:28px; }
+  .bab-head h2,.kamus-hero h2{ font-size:clamp(27px, 7vw, 34px); }
+  .bab-head p{ font-size:14px; }
+  .materi{ margin-bottom:42px; scroll-margin-top:64px; }
+  .materi-head{ gap:8px; }
+  .materi-head h3{ min-width:0; font-size:20px; }
+  .badge-lvl{ font-size:9px; padding:3px 7px; }
+  .materi .desc{ font-size:13.5px; padding-left:11px; }
+  .sub-materi{ margin-top:22px; padding-top:18px; }
+  .lab{ border-radius:7px; }
+  .lab-label{ flex-wrap:wrap; padding:8px 10px; }
+  .lab-btns{ flex-wrap:wrap; }
+  .lab-btns button{ min-height:32px; }
+  textarea.code-input,.code-wrap textarea.code-input{ min-height:260px; padding:14px; font-size:12px; }
+  .code-wrap .syntax-layer{ padding:14px; font-size:12px; }
+  iframe.result-frame{ min-height:260px; }
+  .code-explain-body{ padding:12px; font-size:12px; }
+  .attr-table{ display:block; overflow-x:auto; white-space:nowrap; }
+  .kamus-wrap{ padding:42px 18px 22px; scroll-margin-top:64px; }
+  .kamus-hero{ padding:20px 16px; }
+  .kamus-grid{ grid-template-columns:minmax(0, 1fr); }
+  .kamus-button-wrap,.kamus-toggle-wrap{ padding-left:18px; padding-right:18px; }
+  .kamus-toggle-button{ max-width:100%; padding:12px 16px; font-size:13px; }
+  footer{ padding:32px 18px 72px; }
+}
+
+@media (max-width:380px){
+  .topbar{ padding:8px 12px; }
+  .hero,.bab,.kamus-wrap{ padding-left:15px; padding-right:15px; }
+  .bab::before{ left:15px; right:15px; }
+  .hero .chapter-grid a{ padding:12px 14px; }
+  .lab-btns{ gap:4px; }
+  .lab-btns button{ padding:4px 7px; font-size:10px; }
+  .kamus-button-wrap,.kamus-toggle-wrap,footer{ padding-left:15px; padding-right:15px; }
+}
+
+</style>
+</head>
+<body>
+
+<div class="shell">
+
+  <!-- ===================== SIDEBAR ===================== -->
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="dots"><span></span><span></span><span></span></div>
+      <h1>Belajar Pemrograman Web</h1>
+      <p>TKJ &middot; HTML, CSS &amp; JavaScript dari nol</p>
+    </div>
+    <nav class="chapter-list" id="chapterList">
+
+      <div class="chapter open" data-chapter="bab1">
+        <button class="chapter-head">
+          <span class="chip" style="background:#8FA1C7">1</span>
+          <span class="ctitle">Pengantar Web<small>Sejarah &amp; konsep dasar</small></span>
+          <span class="arrow">&#9656;</span>
+        </button>
+        <div class="sub-list">
+          <a href="#bab1-sejarah"><span class="lvl">dasar</span>Sejarah Perkembangan Web</a>
+          <a href="#bab1-cara-kerja"><span class="lvl">dasar</span>Bagaimana Web Bekerja</a>
+          <a href="#bab1-jenis-website"><span class="lvl">dasar</span>Macam-Macam Website</a>
+          <a href="#bab1-bahasa-web"><span class="lvl">dasar</span>Tiga Bahasa Inti Web</a>
+        </div>
+      </div>
+
+      <div class="chapter" data-chapter="bab2">
+        <button class="chapter-head">
+          <span class="chip" style="background:var(--html-c)">H</span>
+          <span class="ctitle">HTML<small>Struktur halaman web</small></span>
+          <span class="arrow">&#9656;</span>
+        </button>
+        <div class="sub-list">
+          <a href="#bab2-dasar"><span class="lvl">dasar</span>Konsep Dasar HTML</a>
+          <a href="#bab2-teks"><span class="lvl">dasar</span>Heading, Paragraf &amp; Format Teks</a>
+          <a href="#bab2-list"><span class="lvl">dasar</span>List dalam Dokumen HTML</a>
+          <a href="#bab2-tabel"><span class="lvl">menengah</span>Tabel pada Halaman Web</a>
+          <a href="#bab2-multimedia"><span class="lvl">menengah</span>Elemen Multimedia</a>
+          <a href="#bab2-multimedia-gambar" class="nested">Gambar (Lokal &amp; Online)</a>
+          <a href="#bab2-multimedia-audio" class="nested">Audio (Lokal &amp; Online)</a>
+          <a href="#bab2-multimedia-video" class="nested">Video (Lokal &amp; Online)</a>
+          <a href="#bab2-hyperlink"><span class="lvl">menengah</span>Hyperlink</a>
+          <a href="#bab2-form"><span class="lvl">lanjut</span>Form pada Halaman Web</a>
+          <a href="#bab2-semantik"><span class="lvl">lanjut</span>HTML Semantik</a>
+        </div>
+      </div>
+
+      <div class="chapter" data-chapter="bab3">
+        <button class="chapter-head">
+          <span class="chip" style="background:var(--css-c)">C</span>
+          <span class="ctitle">CSS<small>Warna, tipografi, layout &amp; responsif</small></span>
+          <span class="arrow">&#9656;</span>
+        </button>
+        <div class="sub-list">
+          <a href="#bab3-dasar"><span class="lvl">dasar</span>Konsep Dasar &amp; Cascading</a>
+          <a href="#bab3-selector"><span class="lvl">dasar</span>Selector CSS</a>
+          <a href="#bab3-satuan"><span class="lvl">dasar</span>Satuan Pengukuran</a>
+          <a href="#bab3-boxmodel"><span class="lvl">menengah</span>Box Model</a>
+          <a href="#bab3-colors"><span class="lvl">menengah</span>Colors &amp; Background</a>
+          <a href="#bab3-border"><span class="lvl">menengah</span>Border</a>
+          <a href="#bab3-typography"><span class="lvl">menengah</span>Typography</a>
+          <a href="#bab3-text"><span class="lvl">menengah</span>Text Align, Decoration &amp; Transform</a>
+          <a href="#bab3-layout"><span class="lvl">menengah</span>Flexbox &amp; Grid</a>
+          <a href="#bab3-responsif"><span class="lvl">menengah</span>Web Responsif</a>
+          <a href="#bab3-navbar"><span class="lvl">lanjut</span>Navbar: Dropdown &amp; Toggle</a>
+          <a href="#bab3-header"><span class="lvl">lanjut</span>Header Layout</a>
+          <a href="#bab3-body-layout"><span class="lvl">lanjut</span>Body &amp; Grid Areas</a>
+          <a href="#bab3-forms"><span class="lvl">lanjut</span>CSS Forms</a>
+          <a href="#bab3-position"><span class="lvl">lanjut</span>Position</a>
+          <a href="#bab3-shadow"><span class="lvl">lanjut</span>Text &amp; Box Shadow</a>
+          <a href="#bab3-footer"><span class="lvl">lanjut</span>Footer Layout</a>
+        </div>
+      </div>
+
+      <div class="chapter" data-chapter="bab4">
+        <button class="chapter-head">
+          <span class="chip" style="background:var(--js-c)">JS</span>
+          <span class="ctitle">JavaScript<small>Membuat web interaktif</small></span>
+          <span class="arrow">&#9656;</span>
+        </button>
+        <div class="sub-list">
+          <a href="#bab4-dasar"><span class="lvl">dasar</span>Konsep Dasar JavaScript</a>
+          <a href="#bab4-variabel"><span class="lvl">dasar</span>Variabel, Tipe Data &amp; Operator</a>
+          <a href="#bab4-percabangan"><span class="lvl">menengah</span>Percabangan (Kondisi)</a>
+          <a href="#bab4-perulangan"><span class="lvl">menengah</span>Perulangan</a>
+          <a href="#bab4-array"><span class="lvl">menengah</span>Array &amp; Fungsi</a>
+          <a href="#bab4-dom"><span class="lvl">lanjut</span>Document Object Model (DOM)</a>
+          <a href="#bab4-event"><span class="lvl">lanjut</span>Event Handling</a>
+          <a href="#bab4-async"><span class="lvl">lanjut</span>Asynchronous JS &amp; AJAX</a>
+        </div>
+      </div>
+
+      <div class="chapter" data-chapter="bab5">
+        <button class="chapter-head">
+          <span class="chip" style="background:var(--db-c)">DB</span>
+          <span class="ctitle">Basis Data<small>Menyimpan data website</small></span>
+          <span class="arrow">&#9656;</span>
+        </button>
+        <div class="sub-list">
+          <a href="#bab5-konsep"><span class="lvl">dasar</span>Konsep Basis Data</a>
+          <a href="#bab5-mysql"><span class="lvl">menengah</span>Pengenalan MySQL</a>
+          <a href="#bab5-crud"><span class="lvl">lanjut</span>Query CRUD Dasar</a>
+        </div>
+      </div>
+
+      <div class="chapter" data-chapter="bab6">
+        <button class="chapter-head">
+          <span class="chip" style="background:var(--srv-c)">SV</span>
+          <span class="ctitle">Server<small>Menjalankan website</small></span>
+          <span class="arrow">&#9656;</span>
+        </button>
+        <div class="sub-list">
+          <a href="#bab6-konsep"><span class="lvl">dasar</span>Client vs Server</a>
+          <a href="#bab6-webserver"><span class="lvl">menengah</span>Web Server &amp; Hosting</a>
+        </div>
+      </div>
+
+      <div class="chapter kamus-sidebar-item" data-chapter="kamus">
+        <button class="chapter-head" type="button" id="kamusSidebarButton">
+          <span class="chip" style="background:var(--css-c)">KB</span>
+          <span class="ctitle">Kamus Atribut<small>HTML · CSS · JavaScript · SQL</small></span>
+          <span class="arrow">↘</span>
+        </button>
+      </div>
+
+    </nav>
+  </aside>
+
+  <div class="overlay" id="overlay"></div>
+
+  <!-- ===================== MAIN ===================== -->
+  <main class="main">
+    <div class="topbar">
+      <button id="menuBtn" aria-label="Buka menu">&#9776;</button>
+      <div class="tb-title">Daftar Materi</div>
+    </div>
+
+    <section class="hero" id="top">
+      <div class="eyebrow"><span class="bar"></span> TKJ &middot; Kelas Pemrograman Web</div>
+      <h1>Dari <em>tag pertama</em> sampai halaman web yang hidup.</h1>
+      <p class="lead">
+        Modul belajar mandiri untuk siswa TKJ: mulai dari sejarah web, menulis HTML,
+        mempercantik dengan CSS, sampai membuat halaman jadi interaktif dengan JavaScript.
+        Setiap materi punya kotak kode yang bisa langsung diubah dan dijalankan — coba, rusak, perbaiki, ulangi.
+      </p>
+      <div class="chapter-grid">
+        <a href="#bab1-sejarah"><span class="n">01</span><span class="t">Pengantar Web</span><span class="d">Sejarah &amp; cara kerja web</span></a>
+        <a href="#bab2-dasar"><span class="n">02</span><span class="t">HTML</span><span class="d">8 subbab &middot; struktur halaman</span></a>
+        <a href="#bab3-dasar"><span class="n">03</span><span class="t">CSS</span><span class="d">17 subbab &middot; tampilan, layout &amp; responsif</span></a>
+        <a href="#bab4-dasar"><span class="n">04</span><span class="t">JavaScript</span><span class="d">8 subbab &middot; logika &amp; interaksi</span></a>
+        <a href="#bab5-konsep"><span class="n">05</span><span class="t">Basis Data</span><span class="d">Pengantar MySQL &amp; CRUD</span></a>
+        <a href="#bab6-konsep"><span class="n">06</span><span class="t">Server</span><span class="d">Client, server &amp; hosting</span></a>
+      </div>
+    </section>
+
+    <!-- ======================================================= -->
+    <!-- BAB 1 — PENGANTAR WEB                                    -->
+    <!-- ======================================================= -->
+    <section class="bab" id="bab1" style="--bab-glow:#8FA1C7">
+      <div class="bab-head">
+        <span class="bnum">Bab 01</span>
+        <h2>Pengantar Web</h2>
+        <p>Sebelum menulis kode, penting memahami apa itu web, bagaimana ia bekerja, dan kenapa ada begitu banyak jenis website berbeda di internet.</p>
+      </div>
+
+      <article class="materi" id="bab1-sejarah">
+        <div class="materi-head"><h3>Sejarah Perkembangan Web</h3><span class="badge-lvl dasar">dasar</span></div>
+        <div class="desc">
+          World Wide Web (WWW) diciptakan oleh <strong>Tim Berners-Lee</strong> pada tahun 1989 di CERN,
+          awalnya untuk memudahkan para peneliti berbagi dokumen. Web terus berkembang melalui beberapa era besar:
+        </div>
+        <table class="attr-table">
+          <tr><th>Era</th><th>Periode</th><th>Ciri Utama</th></tr>
+          <tr><td>Web 1.0</td><td>1991 &ndash; awal 2000-an</td><td>Halaman statis, hanya baca (read-only), sedikit interaksi</td></tr>
+          <tr><td>Web 2.0</td><td>Pertengahan 2000-an &ndash; sekarang</td><td>Interaktif, media sosial, konten dibuat pengguna (read-write)</td></tr>
+          <tr><td>Web 3.0</td><td>Berkembang saat ini</td><td>Web cerdas, terhubung data, personalisasi berbasis AI</td></tr>
+        </table>
+        <div class="note-box info"><b>Fakta menarik:</b> halaman web pertama di dunia dibuat tahun 1991 dan masih bisa diakses hari ini di <code>info.cern.ch</code> &mdash; isinya hanya teks dan tautan, tanpa gambar maupun warna.</div>
+      </article>
+
+      <article class="materi" id="bab1-cara-kerja">
+        <div class="materi-head"><h3>Bagaimana Web Bekerja</h3><span class="badge-lvl dasar">dasar</span></div>
+        <div class="desc">
+          Ketika kamu mengetik alamat website di browser, terjadi percakapan singkat antara
+          <strong>client</strong> (perangkatmu) dan <strong>server</strong> (komputer penyimpan website).
+          Alur sederhananya seperti berikut:
+        </div>
+        <table class="attr-table">
+          <tr><th>Langkah</th><th>Yang Terjadi</th></tr>
+          <tr><td>1. Request</td><td>Browser mengirim permintaan ke server, misalnya "tolong kirim halaman index.html"</td></tr>
+          <tr><td>2. Proses</td><td>Server mencari file yang diminta, kadang perlu mengambil data dari database</td></tr>
+          <tr><td>3. Response</td><td>Server mengirim balik file HTML, CSS, JS, gambar, dsb. ke browser</td></tr>
+          <tr><td>4. Render</td><td>Browser menyusun dan menampilkan file tersebut menjadi halaman yang kita lihat</td></tr>
+        </table>
+        <div class="note-box"><b>Istilah penting:</b> protokol yang dipakai untuk percakapan ini disebut <code>HTTP</code> (HyperText Transfer Protocol), atau <code>HTTPS</code> jika sudah terenkripsi dan lebih aman.</div>
+      </article>
+
+      <article class="materi" id="bab1-jenis-website">
+        <div class="materi-head"><h3>Macam-Macam Website</h3><span class="badge-lvl dasar">dasar</span></div>
+        <div class="desc">Website dapat dibedakan dari cara kontennya dihasilkan maupun dari fungsinya.</div>
+        <table class="attr-table">
+          <tr><th>Jenis</th><th>Penjelasan</th><th>Contoh</th></tr>
+          <tr><td>Website Statis</td><td>Isinya tetap, tidak berubah kecuali diedit manual oleh pembuatnya</td><td>Company profile sederhana</td></tr>
+          <tr><td>Website Dinamis</td><td>Isinya berubah otomatis berdasarkan data di database</td><td>Toko online, berita</td></tr>
+          <tr><td>Web Aplikasi</td><td>Berfungsi seperti aplikasi penuh, sangat interaktif</td><td>Google Docs, Canva</td></tr>
+          <tr><td>Portal / Media</td><td>Berfokus menyajikan banyak artikel/berita</td><td>Situs berita</td></tr>
+          <tr><td>E-Commerce</td><td>Khusus untuk jual-beli online</td><td>Marketplace</td></tr>
+        </table>
+      </article>
+
+      <article class="materi" id="bab1-bahasa-web">
+        <div class="materi-head"><h3>Tiga Bahasa Inti Web</h3><span class="badge-lvl dasar">dasar</span></div>
+        <div class="desc">
+          Hampir semua halaman web dibangun dari kombinasi tiga bahasa berikut. Ibaratkan seperti membangun rumah:
+        </div>
+        <table class="attr-table">
+          <tr><th>Bahasa</th><th>Analogi</th><th>Fungsi</th></tr>
+          <tr><td>HTML</td><td>Kerangka &amp; dinding rumah</td><td>Menentukan struktur dan isi konten halaman</td></tr>
+          <tr><td>CSS</td><td>Cat, dekorasi, tata ruang</td><td>Mengatur tampilan visual: warna, jarak, tata letak</td></tr>
+          <tr><td>JavaScript</td><td>Listrik &amp; saklar rumah</td><td>Membuat halaman merespons aksi pengguna (interaktif)</td></tr>
+        </table>
+        <div class="note-box info"><b>Urutan belajar yang disarankan:</b> HTML dulu untuk memahami struktur, lalu CSS untuk mempercantik, baru JavaScript untuk membuatnya hidup. Modul ini disusun mengikuti urutan tersebut, mulai Bab 02.</div>
+      </article>
+    </section>
+
+    <!-- ======================================================= -->
+    <!-- BAB 2 — HTML                                             -->
+    <!-- ======================================================= -->
+    <section class="bab" id="bab2" style="--bab-glow:#E8823C">
+      <div class="bab-head">
+        <span class="bnum">Bab 02</span>
+        <h2>HTML — Struktur Halaman Web</h2>
+        <p>HTML (HyperText Markup Language) adalah bahasa dasar untuk menyusun isi sebuah halaman web: judul, paragraf, gambar, tabel, hingga formulir.</p>
+      </div>
+
+      <article class="materi" id="bab2-dasar">
+        <div class="materi-head"><h3>Konsep Dasar HTML</h3><span class="badge-lvl dasar">dasar</span></div>
+        <div class="desc">
+          Kode HTML tersusun dari <strong>tag</strong>, biasanya berpasangan seperti <code>&lt;p&gt;</code> dan <code>&lt;/p&gt;</code>.
+          Setiap dokumen HTML memiliki struktur dasar wajib: <code>&lt;html&gt;</code> sebagai pembungkus,
+          <code>&lt;head&gt;</code> untuk informasi halaman, dan <code>&lt;body&gt;</code> untuk isi yang tampil.
+          HTML dijalankan langsung oleh browser tanpa perlu server.
+        </div>
+        <div class="lab" data-lab="h-dasar">
+          <div class="lab-grid">
+            <div class="lab-pane">
+              <div class="lab-label"><span class="lt"><span class="dot" style="background:var(--html-c)"></span>editor.html</span>
+                <div class="lab-btns"><button class="reset-btn" data-action="reset">Reset</button><button class="run-btn" data-action="run">Jalankan</button></div>
+              </div>
+              <textarea class="code-input" spellcheck="false">&lt;!-- ✦ Komentar: bagian input ini dapat diedit, lalu tekan Jalankan untuk melihat output. --&gt;
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+  &lt;title&gt;Halaman Pertamaku&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;h1&gt;Selamat Datang&lt;/h1&gt;
+  &lt;p&gt;Ini adalah paragraf pertama saya di HTML.&lt;/p&gt;
+&lt;/body&gt;
+&lt;/html&gt;</textarea>
+            </div>
+            <div class="lab-pane">
+              <div class="lab-label"><span class="lt"><span class="dot" style="background:#5EEAD4"></span>Hasil</span></div>
+              <iframe class="result-frame"></iframe>
+            </div>
+          </div>
+        </div>
+        <div class="note-box"><b>Coba:</b> ubah teks di dalam <code>&lt;h1&gt;</code> lalu tekan tombol Jalankan untuk melihat perubahannya secara langsung.</div>
+      </article>
+
+      <article class="materi" id="bab2-teks">
+        <div class="materi-head"><h3>Heading, Paragraf &amp; Format Teks</h3><span class="badge-lvl dasar">dasar</span></div>
+        <div class="desc">
+          HTML punya 6 tingkat judul, dari <code>&lt;h1&gt;</code> (terbesar) sampai <code>&lt;h6&gt;</code> (terkecil).
+          Untuk format teks tersedia <code>&lt;b&gt;</code> tebal, <code>&lt;i&gt;</code> miring, <code>&lt;u&gt;</code> garis bawah,
+          <code>&lt;sup&gt;</code> superscript, dan <code>&lt;sub&gt;</code> subscript.
+        </div>
+        <div class="lab" data-lab="h-teks">
+          <div class="lab-grid">
+            <div class="lab-pane">
+              <div class="lab-label"><span class="lt"><span class="dot" style="background:var(--html-c)"></span>editor.html</span>
+                <div class="lab-btns"><button class="reset-btn" data-action="reset">Reset</button><button class="run-btn" data-action="run">Jalankan</button></div>
+              </div>
+              <textarea class="code-input" spellcheck="false">&lt;!-- ✦ Komentar: bagian input ini dapat diedit, lalu tekan Jalankan untuk melihat output. --&gt;
+&lt;h1&gt;Judul Terbesar (h1)&lt;/h1&gt;
+&lt;h3&gt;Sub Judul (h3)&lt;/h3&gt;
+&lt;p&gt;Ini paragraf biasa berisi teks &lt;b&gt;tebal&lt;/b&gt;,
+&lt;i&gt;miring&lt;/i&gt;, dan &lt;u&gt;garis bawah&lt;/u&gt;.&lt;/p&gt;
+&lt;p&gt;Rumus kimia air: H&lt;sub&gt;2&lt;/sub&gt;O&lt;/p&gt;
+&lt;p&gt;Luas persegi: sisi&lt;sup&gt;2&lt;/sup&gt;&lt;/p&gt;</textarea>
+            </div>
+            <div class="lab-pane">
+              <div class="lab-label"><span class="lt"><span class="dot" style="background:#5EEAD4"></span>Hasil</span></div>
+              <iframe class="result-frame"></iframe>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="materi" id="bab2-list">
+        <div class="materi-head"><h3>List dalam Dokumen HTML</h3><span class="badge-lvl dasar">dasar</span></div>
+        <div class="desc">
+          Ada dua jenis daftar: <code>&lt;ul&gt;</code> (unordered list, ditandai bulatan) dan
+          <code>&lt;ol&gt;</code> (ordered list, ditandai angka). Setiap butir daftar ditulis dengan <code>&lt;li&gt;</code>.
+        </div>
+        <div class="lab" data-lab="h-list">
+          <div class="lab-grid">
+            <div class="lab-pane">
+              <div class="lab-label"><span class="lt"><span class="dot" style="background:var(--html-c)"></span>editor.html</span>
+                <div class="lab-btns"><button class="reset-btn" data-action="reset">Reset</button><button class="run-btn" data-action="run">Jalankan</button></div>
+              </div>
+              <textarea class="code-input" spellcheck="false">&lt;!-- ✦ Komentar: bagian input ini dapat diedit, lalu tekan Jalankan untuk melihat output. --&gt;
+&lt;h4&gt;Daftar Belanja (tidak berurut)&lt;/h4&gt;
+&lt;ul&gt;
+  &lt;li&gt;Kabel LAN&lt;/li&gt;
+  &lt;li&gt;Router&lt;/li&gt;
+  &lt;li&gt;Switch&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4&gt;Langkah Instalasi (berurut)&lt;/h4&gt;
+&lt;ol&gt;
+  &lt;li&gt;Siapkan perangkat&lt;/li&gt;
+  &lt;li&gt;Sambungkan kabel&lt;/li&gt;
+  &lt;li&gt;Konfigurasi IP&lt;/li&gt;
+&lt;/ol&gt;</textarea>
+            </div>
+            <div class="lab-pane">
+              <div class="lab-label"><span class="lt"><span class="dot" style="background:#5EEAD4"></span>Hasil</span></div>
+              <iframe class="result-frame"></iframe>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="materi" id="bab2-tabel">
+        <div class="materi-head"><h3>Tabel pada Halaman Web</h3><span class="badge-lvl menengah">menengah</span></div>
+        <div class="desc">
+          Tabel dibangun dari tiga tag utama: <code>&lt;table&gt;</code> sebagai pembungkus,
+          <code>&lt;tr&gt;</code> (table row) untuk baris, dan <code>&lt;td&gt;</code> (table data) untuk sel.
+          Gunakan <code>&lt;th&gt;</code> untuk sel judul kolom, dan atribut <code>colspan</code>/<code>rowspan</code> untuk menggabungkan sel.
+        </div>
+        <div class="lab" data-lab="h-tabel">
+          <div class="lab-grid">
+            <div class="lab-pane">
+              <div class="lab-label"><span class="lt"><span class="dot" style="background:var(--html-c)"></span>editor.html</span>
+                <div class="lab-btns"><button class="reset-btn" data-action="reset">Reset</button><button class="run-btn" data-action="run">Jalankan</button></div>
+              </div>
+              <textarea class="code-input" spellcheck="false">&lt;!-- ✦ Komentar: bagian input ini dapat diedit, lalu tekan Jalankan untuk melihat output. --&gt;
+&lt;table border="1" cellpadding="8" cellspacing="0"&gt;
+  &lt;tr&gt;
+    &lt;th&gt;No&lt;/th&gt;
+    &lt;th&gt;Nama&lt;/th&gt;
+    &lt;th colspan="2"&gt;Nilai&lt;/th&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td&gt;1&lt;/td&gt;
+    &lt;td&gt;Ahmad&lt;/td&gt;
+    &lt;td&gt;90&lt;/td&gt;
+    &lt;td&gt;A&lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td&gt;2&lt;/td&gt;
+    &lt;td&gt;Siti&lt;/td&gt;
+    &lt;td&gt;85&lt;/td&gt;
+    &lt;td&gt;B&lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/table&gt;</textarea>
+            </div>
+            <div class="lab-pane">
+              <div class="lab-label"><span class="lt"><span class="dot" style="background:#5EEAD4"></span>Hasil</span></div>
+              <iframe class="result-frame"></iframe>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="materi" id="bab2-multimedia">
+        <div class="materi-head"><h3>Elemen Multimedia</h3><span class="badge-lvl menengah">menengah</span></div>
+        <div class="desc">
+          Multimedia adalah gabungan lebih dari satu jenis media &mdash; gambar, audio, dan video &mdash; dalam satu halaman.
+          Browser modern sudah punya elemen HTML5 bawaan untuk menampilkannya tanpa plugin tambahan.
+          Berikut pembahasan tiap jenis media, lengkap dengan perbandingan sumber <strong>lokal</strong> (file sendiri) dan <strong>online</strong> (tautan internet).
+        </div>
+
+        <div class="sub-materi" id="bab2-multimedia-gambar">
+          <div class="sub-materi-head"><span class="snum">1</span><h4>Menyisipkan Gambar (Lokal &amp; Online)</h4></div>
+          <div class="desc">
+            Gambar disisipkan dengan <code>&lt;img&gt;</code>. Nilai atribut <code>src</code> bisa berupa
+            <strong>path file lokal</strong> (gambar satu folder dengan file HTML) atau <strong>URL online</strong> (tautan langsung ke gambar di internet).
+            Atribut <code>alt</code> wajib diisi sebagai teks pengganti jika gambar gagal dimuat, dan penting untuk aksesibilitas.
+            Gambar juga bisa dijadikan tautan dengan membungkusnya di dalam tag <code>&lt;a&gt;</code>.
+          </div>
+          <div class="lab" data-lab="h-gambar">
+            <div class="lab-grid">
+              <div class="lab-pane">
+                <div class="lab-label"><span class="lt"><span class="dot" style="background:var(--html-c)"></span>editor.html</span>
+                  <div class="lab-btns"><button class="reset-btn" data-action="reset">Reset</button><button class="run-btn" data-action="run">Jalankan</button></div>
+                </div>
+                <textarea class="code-input" spellcheck="false">&lt;!-- ✦ Komentar: bagian input ini dapat diedit, lalu tekan Jalankan untuk melihat output. --&gt;
+&lt;!-- Gambar dari file lokal, satu folder dengan index.html --&gt;
+&lt;img src="gambar/laptop.jpg" alt="Laptop siswa TKJ" width="220"&gt;
+
+&lt;!-- Gambar dari internet (URL langsung) --&gt;
+&lt;img src="https://picsum.photos/seed/tkj/260/150" alt="Contoh gambar online" width="260"&gt;
+
+&lt;!-- Gambar sebagai tautan --&gt;
+&lt;a href="https://www.google.com"&gt;
+  &lt;img src="https://picsum.photos/seed/iconlink/48/48" alt="Ke Google" width="48"&gt;
+&lt;/a&gt;</textarea>
+              </div>
+              <div class="lab-pane">
+                <div class="lab-label"><span class="lt"><span class="dot" style="background:#5EEAD4"></span>Hasil</span></div>
+                <iframe class="result-frame"></iframe>
+              </div>
+            </div>
+          </div>
+          <table class="attr-table">
+            <tr><th>Atribut</th><th>Nilai contoh</th><th>Fungsi</th></tr>
+            <tr><td>src</td><td>"gambar/foto.jpg" / "https://..."</td><td>Sumber gambar (lokal atau online)</td></tr>
+            <tr><td>alt</td><td>"Deskripsi gambar"</td><td>Teks alternatif jika gambar tidak tampil</td></tr>
+            <tr><td>width / height</td><td>"260"</td><td>Ukuran tampil gambar (piksel)</td></tr>
+          </table>
+          <div class="note-box info"><b>Tips:</b> untuk gambar lokal, simpan file dalam folder proyek (misal folder <code>gambar/</code>) lalu tulis path relatifnya di <code>src</code> &mdash; jangan alamat folder komputer sendiri (mis. <code>C:\Users\...</code>) karena tidak akan terbaca di komputer lain.</div>
+        </div>
+
+        <div class="sub-materi" id="bab2-multimedia-audio">
+          <div class="sub-materi-head"><span class="snum">2</span><h4>Menyisipkan Audio (Lokal &amp; Online)</h4></div>
+          <div class="desc">
+            Elemen <code>&lt;audio&gt;</code> menerima file lokal lewat tag <code>&lt;source&gt;</code>, atau tautan file audio online
+            langsung di atribut <code>src</code>, selama server tujuan mengizinkan file tersebut diputar langsung di browser.
+            Atribut <code>controls</code> menampilkan tombol putar/jeda/volume.
+          </div>
+          <div class="lab" data-lab="h-audio">
+            <div class="lab-grid">
+              <div class="lab-pane">
+                <div class="lab-label"><span class="lt"><span class="dot" style="background:var(--html-c)"></span>editor.html</span>
+                  <div class="lab-btns"><button class="reset-btn" data-action="reset">Reset</button><button class="run-btn" data-action="run">Jalankan</button></div>
+                </div>
+                <textarea class="code-input" spellcheck="false">&lt;!-- ✦ Komentar: bagian input ini dapat diedit, lalu tekan Jalankan untuk melihat output. --&gt;
+&lt;!-- Audio lokal, filenya satu folder dengan index.html --&gt;
+&lt;audio controls&gt;
+  &lt;source src="audio/bel-sekolah.mp3" type="audio/mpeg"&gt;
+  Browser tidak mendukung tag audio.
+&lt;/audio&gt;
+
+&lt;!-- Audio online (URL langsung ke file .mp3) --&gt;
+&lt;audio controls src="https://interactive-examples.mdn.mozilla.net/media/cc0-audio/t-rex-roar.mp3"&gt;&lt;/audio&gt;</textarea>
+              </div>
+              <div class="lab-pane">
+                <div class="lab-label"><span class="lt"><span class="dot" style="background:#5EEAD4"></span>Hasil (yang online bisa diputar)</span></div>
+                <iframe class="result-frame"></iframe>
+              </div>
+            </div>
+          </div>
+          <div class="note-box"><b>Perhatian:</b> tidak semua tautan audio di internet boleh dipakai langsung &mdash; banyak situs streaming (mis. Spotify) tidak menyediakan link file mentah karena alasan hak cipta dan lisensi.</div>
+        </div>
+
+        <div class="sub-materi" id="bab2-multimedia-video">
+          <div class="sub-materi-head"><span class="snum">3</span><h4>Menyisipkan Video (Lokal &amp; Online)</h4></div>
+          <div class="desc">
+            Elemen <code>&lt;video&gt;</code> dipakai untuk file video sendiri (lokal) melalui tag <code>&lt;source&gt;</code>,
+            lengkap dengan atribut <code>controls</code>. Untuk video dari platform seperti YouTube, digunakan
+            <code>&lt;iframe&gt;</code> dengan URL versi "embed", bukan tag <code>&lt;video&gt;</code>.
+          </div>
+          <div class="lab" data-lab="h-video">
+            <div class="lab-grid">
+              <div class="lab-pane">
+                <div class="lab-label"><span class="lt"><span class="dot" style="background:var(--html-c)"></span>editor.html</span>
+                  <div class="lab-btns"><button class="reset-btn" data-action="reset">Reset</button><button class="run-btn" data-action="run">Jalankan</button></div>
+                </div>
+                <textarea class="code-input" spellcheck="false">&lt;!-- ✦ Komentar: bagian input ini dapat diedit, lalu tekan Jalankan untuk melihat output. --&gt;
+&lt;!-- Video lokal, filenya satu folder dengan index.html --&gt;
+&lt;video width="260" controls&gt;
+  &lt;source src="video/profil-sekolah.mp4" type="video/mp4"&gt;
+  Browser tidak mendukung tag video.
+&lt;/video&gt;
+
+&lt;!-- Video online via YouTube (embed) --&gt;
+&lt;iframe width="260" height="150"
+  src="https://www.youtube.com/embed/aqz-KE-bpKQ"
+  title="Video YouTube"
+  allowfullscreen&gt;&lt;/iframe&gt;</textarea>
+              </div>
+              <div class="lab-pane">
+                <div class="lab-label"><span class="lt"><span class="dot" style="background:#5EEAD4"></span>Hasil (embed YouTube bisa diputar)</span></div>
+                <iframe class="result-frame"></iframe>
+              </div>
+            </div>
+          </div>
+          <table class="attr-table">
+            <tr><th>Atribut</th><th>Nilai contoh</th><th>Fungsi</th></tr>
+            <tr><td>controls</td><td>(tanpa nilai)</td><td>Menampilkan tombol putar/jeda/volume</td></tr>
+            <tr><td>autoplay</td><td>(tanpa nilai)</td><td>Video otomatis diputar saat halaman dibuka</td></tr>
+            <tr><td>loop</td><td>(tanpa nilai)</td><td>Video diulang terus-menerus</td></tr>
+            <tr><td>src (iframe)</td><td>URL versi "embed"</td><td>Menampilkan video dari platform lain (YouTube dll)</td></tr>
+          </table>
+        </div>
+      </article>
+
+      <article class="materi" id="bab2-hyperlink">
+        <div class="materi-head"><h3>Hyperlink</h3><span class="badge-lvl menengah">menengah</span></div>
+        <div class="desc">
+          Tautan dibuat dengan <code>&lt;a href="..."&gt;</code>. Nilai <code>href</code> bisa berupa alamat website,
+          email (<code>mailto:</code>), nomor telepon (<code>tel:</code>), atau bagian lain di halaman yang sama (diawali <code>#</code>).
+        </div>
+        <div class="lab" data-lab="h-hyperlink">
+          <div class="lab-grid">
+            <div class="lab-pane">
+              <div class="lab-label"><span class="lt"><span class="dot" style="background:var(--html-c)"></span>editor.html</span>
+                <div class="lab-btns"><button class="reset-btn" data-action="reset">Reset</button><button class="run-btn" data-action="run">Jalankan</button></div>
+              </div>
+              <textarea class="code-input" spellcheck="false">&lt;!-- ✦ Komentar: bagian input ini dapat diedit, lalu tekan Jalankan untuk melihat output. --&gt;
+&lt;a href="https://www.google.com" target="_blank"&gt;Buka Google&lt;/a&gt;&lt;br&gt;
+&lt;a href="mailto:guru@sekolah.sch.id"&gt;Kirim Email&lt;/a&gt;&lt;br&gt;
+&lt;a href="tel:+6281234567890"&gt;Telepon Sekolah&lt;/a&gt;&lt;br&gt;
+&lt;a href="#bawah"&gt;Lompat ke bawah&lt;/a&gt;
+
+&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;
+
+&lt;a name="bawah"&gt;&lt;/a&gt;
+&lt;p&gt;Ini bagian bawah halaman. Coba klik "Lompat ke bawah" di atas.&lt;/p&gt;</textarea>
+            </div>
+            <div class="lab-pane">
+              <div class="lab-label"><span class="lt"><span class="dot" style="background:#5EEAD4"></span>Hasil</span></div>
+              <iframe class="result-frame"></iframe>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="materi" id="bab2-form">
+        <div class="materi-head"><h3>Form pada Halaman Web</h3><span class="badge-lvl lanjut">lanjut</span></div>
+        <div class="desc">
+          Form mengumpulkan data dari pengguna. Elemen umum: <code>&lt;input&gt;</code> (banyak tipe: text, email, date, radio,
+          checkbox, file), <code>&lt;select&gt;</code> untuk dropdown, <code>&lt;textarea&gt;</code> untuk teks panjang, dan
+          <code>&lt;button&gt;</code> untuk mengirim data.
+        </div>
+        <div class="lab" data-lab="h-form">
+          <div class="lab-grid">
+            <div class="lab-pane">
+              <div class="lab-label"><span class="lt"><span class="dot" style="background:var(--html-c)"></span>editor.html</span>
+                <div class="lab-btns"><button class="reset-btn" data-action="reset">Reset</button><button class="run-btn" data-action="run">Jalankan</button></div>
+              </div>
+              <textarea class="code-input" spellcheck="false">&lt;!-- ✦ Komentar: bagian input ini dapat diedit, lalu tekan Jalankan untuk melihat output. --&gt;
+&lt;form onsubmit="return false;"&gt;
+  &lt;label&gt;Nama&lt;/label&gt;&lt;br&gt;
+  &lt;input type="text" name="nama" placeholder="Nama lengkap"&gt;&lt;br&gt;&lt;br&gt;
+
+  &lt;label&gt;Jenis Kelamin&lt;/label&gt;&lt;br&gt;
+  &lt;input type="radio" name="jk"&gt; Laki-laki
+  &lt;input type="radio" name="jk"&gt; Perempuan&lt;br&gt;&lt;br&gt;
+
+  &lt;label&gt;Kelas&lt;/label&gt;&lt;br&gt;
+  &lt;select&gt;
+    &lt;option&gt;X TKJ 1&lt;/option&gt;
+    &lt;option&gt;XI TKJ 2&lt;/option&gt;
+  &lt;/select&gt;&lt;br&gt;&lt;br&gt;
+
+  &lt;button type="submit"&gt;Kirim&lt;/button&gt;
+&lt;/form&gt;</textarea>
+            </div>
+            <div class="lab-pane">
+              <div class="lab-label"><span class="lt"><span class="dot" style="background:#5EEAD4"></span>Hasil</span></div>
+              <iframe class="result-frame"></iframe>
+            </div>
+          </div>
+        </div>
+        <div class="note-box"><b>Catatan:</b> pada website nyata, tag <code>&lt;form&gt;</code> diberi atribut <code>action</code> (alamat pemroses data) dan <code>method</code> (cara pengiriman: GET atau POST).</div>
+      </article>
+
+      <article class="materi" id="bab2-semantik">
+        <div class="materi-head"><h3>HTML Semantik</h3><span class="badge-lvl lanjut">lanjut</span></div>
+        <div class="desc">
+          HTML semantik adalah tag yang menjelaskan makna isinya, bukan sekadar tampilan &mdash; seperti
+          <code>&lt;header&gt;</code>, <code>&lt;nav&gt;</code>, <code>&lt;main&gt;</code>, <code>&lt;section&gt;</code>, <code>&lt;article&gt;</code>,
+          dan <code>&lt;footer&gt;</code>. Ini memudahkan browser, mesin pencari, dan pembaca layar memahami struktur halaman.
+        </div>
+        <div class="lab" data-lab="h-semantik">
+          <div class="lab-grid">
+            <div class="lab-pane">
+              <div class="lab-label"><span class="lt"><span class="dot" style="background:var(--html-c)"></span>editor.html</span>
+                <div class="lab-btns"><button class="reset-btn" data-action="reset">Reset</button><button class="run-btn" data-action="run">Jalankan</button></div>
+              </div>
+              <textarea class="code-input" spellcheck="false">&lt;!-- ✦ Komentar: bagian input ini dapat diedit, lalu tekan Jalankan untuk melihat output. --&gt;
+&lt;header style="background:#eee;padding:10px;"&gt;
+  &lt;h2&gt;Nama Website&lt;/h2&gt;
+&lt;/header&gt;
+
+&lt;nav style="padding:10px;"&gt;
+  &lt;a href="#"&gt;Beranda&lt;/a&gt; | &lt;a href="#"&gt;Tentang&lt;/a&gt;
+&lt;/nav&gt;
+
+&lt;main style="padding:10px;"&gt;
+  &lt;article&gt;
+    &lt;h3&gt;Judul Artikel&lt;/h3&gt;
+    &lt;p&gt;Isi artikel ditulis di sini.&lt;/p&gt;
+  &lt;/article&gt;
+&lt;/main&gt;
+
+&lt;footer style="background:#eee;padding:10px;"&gt;
+  &copy; 2026 Sekolahku
+&lt;/footer&gt;</textarea>
+            </div>
+            <div class="lab-pane">
+              <div class="lab-label"><span class="lt"><span class="dot" style="background:#5EEAD4"></span>Hasil</span></div>
+              <iframe class="result-frame"></iframe>
+            </div>
+          </div>
+        </div>
+      </article>
+    </section>
+
+
+    <!-- ======================================================= -->
+    <!-- BAB 3 — CSS                                             -->
+    <!-- ======================================================= -->
+    <section class="bab" id="bab3" style="--bab-glow:#4FA3E3">
+      <div class="bab-head">
+        <span class="bnum">Bab 03</span>
+        <h2>CSS — Mendesain Tampilan</h2>
+        <p>CSS (Cascading Style Sheets) digunakan untuk mengatur tampilan elemen HTML, mulai dari warna, ukuran, jarak, tipografi, latar belakang, border, hingga layout responsif. Materi bab ini diperluas berdasarkan materi CSS pada PDF yang kamu kirim.</p>
+      </div>
+
+      <article class="materi" id="bab3-dasar">
+        <div class="materi-head"><h3>Konsep Dasar CSS &amp; Cascading Style Sheets</h3><span class="badge-lvl dasar">dasar</span></div>
+        <div class="desc">
+          CSS bukan bahasa pemrograman, melainkan bahasa untuk mengatur presentasi halaman web. Aturan CSS ditulis dengan pola
+          <code>selector { property: value; }</code>. CSS dapat diterapkan melalui <strong>internal</strong>, <strong>inline</strong>,
+          <strong>external</strong>, dan <strong>@import</strong>. Dalam konsep cascading, aturan yang lebih spesifik atau memiliki prioritas
+          lebih tinggi dapat mengalahkan aturan lain.
+        </div>
+        <div class="lab" data-lab="c-dasar">
+          <div class="lab-grid">
+            <div class="lab-pane">
+              <div class="lab-label"><span class="lt"><span class="dot" style="background:var(--css-c)"></span>editor.html</span>
+                <div class="lab-btns"><button class="reset-btn" data-action="reset">Reset</button><button class="run-btn" data-action="run">Jalankan</button></div>
+              </div>
+              <textarea class="code-input" spellcheck="false">&lt;style&gt;
+  /* ✦ CSS internal: aturan ditempatkan di dalam halaman */
+  h2 {
+    color: blue;
+    font-family: Arial, sans-serif;
+  }
+
+  /* ✦ Selector paragraf mengatur semua &lt;p&gt; */
+  p {
+    color: #444;
+    font-size: 16px;
+  }
+&lt;/style&gt;
+
+&lt;h2&gt;Judul dengan CSS&lt;/h2&gt;
+&lt;p&gt;Teks ini mengikuti aturan CSS internal.&lt;/p&gt;
+
+&lt;!-- ✦ CSS inline memiliki aturan langsung pada elemen --&gt;
+&lt;p style="color:red;"&gt;Contoh CSS inline.&lt;/p&gt;</textarea>
+            </div>
+            <div class="lab-pane">
+              <div class="lab-label"><span class="lt"><span class="dot" style="background:#5EEAD4"></span>Hasil</span></div>
+              <iframe class="result-frame"></iframe>
+            </div>
+          </div>
+        </div>
+        <div class="note-box info"><b>Empat cara pada materi:</b> internal memakai <code>&lt;style&gt;</code>, inline memakai <code>style</code>, external memakai <code>&lt;link rel="stylesheet"&gt;</code>, sedangkan <code>@import</code> digunakan untuk mengimpor stylesheet.</div>
+      </article>
+
+      <article class="materi" id="bab3-selector">
+        <div class="materi-head"><h3>Selector Dasar, Turunan, Attribute, Class, ID &amp; Pseudo-class</h3><span class="badge-lvl dasar">dasar</span></div>
+        <div class="desc">
+          Materi PDF membahas selector <strong>element</strong>, <strong>ID</strong>, <strong>class</strong>, <strong>universal</strong>,
+          <strong>descendant</strong>, <strong>child</strong>, <strong>attribute</strong>, <strong>grouping</strong>,
+          <strong>pseudo-class</strong>, dan <strong>pseudo-element</strong>. Selector menentukan elemen mana yang menerima aturan CSS.
+        </div>
+        <div class="lab" data-lab="c-selector">
+          <div class="lab-grid">
+            <div class="lab-pane">
+              <div class="lab-label"><span class="lt"><span class="dot" style="background:var(--css-c)"></span>editor.html</span>
+                <div class="lab-btns"><button class="reset-btn" data-action="reset">Reset</button><button class="run-btn" data-action="run">Jalankan</button></div>
+              </div>
+              <textarea class="code-input" spellcheck="false">&lt;style&gt;
+  /* ✦ Element selector */
+  h2 { color: #2563eb; }
+
+  /* ✦ Class selector: dapat dipakai berulang */
+  .kartu { padding: 10px; background: #dbeafe; }
+
+  /* ✦ ID selector: untuk elemen unik */
+  #istimewa { background: #fde68a; font-weight: bold; }
+
+  /* ✦ Descendant selector: p di dalam .kotak */
+  .kotak p { color: #166534; }
+
+  /* ✦ Child selector: hanya anak langsung */
+  .menu &gt; a { color: #7c3aed; }
+
+  /* ✦ Attribute selector */
+  input[type="text"] { border: 2px solid #2563eb; }
+
+  /* ✦ Grouping selector */
+  h3, h4 { margin-bottom: 4px; }
+
+  /* ✦ Pseudo-class */
+  .kartu:hover { transform: translateY(-2px); }
+
+  /* ✦ Pseudo-element */
+  .judul::before { content: "★ "; }
+&lt;/style&gt;
+
+&lt;h2&gt;Selector CSS&lt;/h2&gt;
+&lt;div class="kartu kotak" id="istimewa"&gt;
+  &lt;h3 class="judul"&gt;Kotak Istimewa&lt;/h3&gt;
+  &lt;p&gt;Paragraf di dalam kotak.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="menu"&gt;
+  &lt;a href="#"&gt;Tautan langsung&lt;/a&gt;
+  &lt;span&gt;&lt;a href="#"&gt;Tautan bersarang&lt;/a&gt;&lt;/span&gt;
+&lt;/div&gt;
+&lt;input type="text" placeholder="Selector atribut"&gt;</textarea>
+            </div>
+            <div class="lab-pane">
+              <div class="lab-label"><span class="lt"><span class="dot" style="background:#5EEAD4"></span>Hasil</span></div>
+              <iframe class="result-frame"></iframe>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="materi" id="bab3-satuan">
+        <div class="materi-head"><h3>Satuan Pengukuran CSS</h3><span class="badge-lvl dasar">dasar</span></div>
+        <div class="desc">
+          Materi PDF membagi satuan menjadi panjang, waktu, sudut, dan resolusi. Satuan panjang yang dibahas meliputi
+          <code>px</code>, <code>%</code>, <code>em</code>, <code>rem</code>, <code>vw</code>, <code>vh</code>, <code>vmin</code>, dan <code>vmax</code>.
+          Untuk waktu digunakan <code>s</code> dan <code>ms</code>, sudut memakai <code>deg</code>, <code>rad</code>, <code>grad</code>, <code>turn</code>,
+          sedangkan resolusi membahas <code>dpi</code>, <code>dpcm</code>, dan <code>dppx</code>.
+        </div>
+        <table class="attr-table">
+          <tr><th>Kategori</th><th>Satuan</th><th>Fungsi</th></tr>
+          <tr><td>Panjang</td><td>px, %, em, rem, vw, vh, vmin, vmax</td><td>Mengatur ukuran/ruang elemen secara absolut atau relatif.</td></tr>
+          <tr><td>Waktu</td><td>s, ms</td><td>Mengatur durasi, delay, dan interval animasi.</td></tr>
+          <tr><td>Sudut</td><td>deg, rad, grad, turn</td><td>Mengatur rotasi dan besar sudut.</td></tr>
+          <tr><td>Resolusi</td><td>dpi, dpcm, dppx</td><td>Menyatakan kepadatan/resolusi pada konteks tertentu.</td></tr>
+        </table>
+        <div class="lab" data-lab="c-satuan">
+          <div class="lab-grid">
+            <div class="lab-pane">
+              <div class="lab-label"><span class="lt"><span class="dot" style="background:var(--css-c)"></span>editor.html</span>
+                <div class="lab-btns"><button class="reset-btn" data-action="reset">Reset</button><button class="run-btn" data-action="run">Jalankan</button></div>
+              </div>
+              <textarea class="code-input" spellcheck="false">&lt;style&gt;
+  /* ✦ Bandingkan satuan relatif dan absolut */
+  .px { width: 180px; }
+  .persen { width: 70%; }
+  .rem { font-size: 1.5rem; }
+  .vw { width: 40vw; }
+&lt;/style&gt;
+
+&lt;div class="px"&gt;Lebar 180px&lt;/div&gt;
+&lt;div class="persen"&gt;Lebar 70% dari container&lt;/div&gt;
+&lt;p class="rem"&gt;Ukuran 1.5rem&lt;/p&gt;
+&lt;div class="vw"&gt;Lebar 40vw&lt;/div&gt;</textarea>
+            </div>
+            <div class="lab-pane"><div class="lab-label"><span class="lt"><span class="dot" style="background:#5EEAD4"></span>Hasil</span></div><iframe class="result-frame"></iframe></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="materi" id="bab3-boxmodel">
+        <div class="materi-head"><h3>Box Model: Content, Padding, Border &amp; Margin</h3><span class="badge-lvl menengah">menengah</span></div>
+        <div class="desc">
+          Setiap elemen dapat dipahami sebagai kotak yang terdiri dari <strong>content</strong>, <strong>padding</strong>,
+          <strong>border</strong>, dan <strong>margin</strong>. Properti <code>box-sizing</code> membantu mengatur cara ukuran
+          elemen dihitung.
+        </div>
+        <div class="lab" data-lab="c-boxmodel">
+          <div class="lab-grid">
+            <div class="lab-pane">
+              <div class="lab-label"><span class="lt"><span class="dot" style="background:var(--css-c)"></span>editor.html</span>
+                <div class="lab-btns"><button class="reset-btn" data-action="reset">Reset</button><button class="run-btn" data-action="run">Jalankan</button></div>
+              </div>
+              <textarea class="code-input" spellcheck="false">&lt;style&gt;
+  /* ✦ Atur bagian box model satu per satu */
+  .box {
+    box-sizing: border-box;
+    width: 220px;
+    padding: 20px;
+    border: 5px solid #2563eb;
+    margin: 15px;
+    background: #dbeafe;
+  }
+&lt;/style&gt;
+
+&lt;div class="box"&gt;Content berada di dalam padding. Border mengelilingi kotak, sedangkan margin memberi jarak di luar.&lt;/div&gt;</textarea>
+            </div>
+            <div class="lab-pane"><div class="lab-label"><span class="lt"><span class="dot" style="background:#5EEAD4"></span>Hasil</span></div><iframe class="result-frame"></iframe></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="materi" id="bab3-colors">
+        <div class="materi-head"><h3>Colors &amp; Background</h3><span class="badge-lvl menengah">menengah</span></div>
+        <div class="desc">
+          Materi PDF membahas warna berdasarkan nama, hex, RGB, RGBA, HSL, dan HSLA. Untuk latar belakang dibahas
+          <code>background-color</code>, <code>background-image</code>, <code>background-repeat</code>, <code>background-position</code>,
+          <code>background-attachment</code>, <code>background-size</code>, serta shorthand <code>background</code>.
+        </div>
+        <div class="lab" data-lab="c-colors">
+          <div class="lab-grid">
+            <div class="lab-pane">
+              <div class="lab-label"><span class="lt"><span class="dot" style="background:var(--css-c)"></span>editor.html</span>
+                <div class="lab-btns"><button class="reset-btn" data-action="reset">Reset</button><button class="run-btn" data-action="run">Jalankan</button></div>
+              </div>
+              <textarea class="code-input" spellcheck="false">&lt;style&gt;
+  /* ✦ Nama warna */
+  .nama { color: blue; }
+
+  /* ✦ Hexadecimal */
+  .hex { color: #f5733a; }
+
+  /* ✦ RGB dan RGBA */
+  .rgb { color: rgb(255, 87, 51); }
+  .rgba { color: rgba(255, 87, 51, .55); }
+
+  /* ✦ HSL dan HSLA */
+  .hsl { color: hsl(300, 76%, 72%); }
+  .hsla { color: hsla(300, 76%, 72%, .55); }
+
+  /* ✦ Background lengkap */
+  .latar {
+    color: white;
+    padding: 24px;
+    background-color: #1e293b;
+    background-image: linear-gradient(135deg, #2563eb, #7c3aed);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+  }
+&lt;/style&gt;
+
+&lt;p class="nama"&gt;Nama warna&lt;/p&gt;
+&lt;p class="hex"&gt;Hexadecimal&lt;/p&gt;
+&lt;p class="rgb"&gt;RGB&lt;/p&gt;
+&lt;p class="rgba"&gt;RGBA transparan&lt;/p&gt;
+&lt;p class="hsl"&gt;HSL&lt;/p&gt;
+&lt;p class="hsla"&gt;HSLA transparan&lt;/p&gt;
+&lt;div class="latar"&gt;Contoh background dengan warna dan gradient.&lt;/div&gt;</textarea>
+            </div>
+            <div class="lab-pane"><div class="lab-label"><span class="lt"><span class="dot" style="background:#5EEAD4"></span>Hasil</span></div><iframe class="result-frame"></iframe></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="materi" id="bab3-border">
+        <div class="materi-head"><h3>Border &amp; Gaya Garis</h3><span class="badge-lvl menengah">menengah</span></div>
+        <div class="desc">
+          Materi PDF memperkenalkan gaya <code>solid</code>, <code>dashed</code>, <code>dotted</code>, <code>double</code>,
+          <code>groove</code>, <code>ridge</code>, <code>inset</code>, <code>outset</code>, <code>none</code>, dan <code>hidden</code>.
+          Pengaturan dapat dipisahkan per sisi dengan <code>border-top-style</code>, <code>border-right-style</code>,
+          <code>border-bottom-style</code>, dan <code>border-left-style</code>.
+        </div>
+        <div class="lab" data-lab="c-border">
+          <div class="lab-grid">
+            <div class="lab-pane">
+              <div class="lab-label"><span class="lt"><span class="dot" style="background:var(--css-c)"></span>editor.html</span>
+                <div class="lab-btns"><button class="reset-btn" data-action="reset">Reset</button><button class="run-btn" data-action="run">Jalankan</button></div>
+              </div>
+              <textarea class="code-input" spellcheck="false">&lt;style&gt;
+  /* ✦ Shorthand: ketebalan, jenis, warna */
+  .demo {
+    padding: 12px;
+    margin: 8px 0;
+    border: 4px solid #2563eb;
+    border-radius: 10px;
+  }
+  .dashed { border-style: dashed; }
+  .dotted { border-style: dotted; }
+  .double { border-style: double; }
+  .inset { border-style: inset; }
+  .outset { border-style: outset; }
+&lt;/style&gt;
+
+&lt;div class="demo"&gt;solid&lt;/div&gt;
+&lt;div class="demo dashed"&gt;dashed&lt;/div&gt;
+&lt;div class="demo dotted"&gt;dotted&lt;/div&gt;
+&lt;div class="demo double"&gt;double&lt;/div&gt;
+&lt;div class="demo inset"&gt;inset&lt;/div&gt;
+&lt;div class="demo outset"&gt;outset&lt;/div&gt;</textarea>
+            </div>
+            <div class="lab-pane"><div class="lab-label"><span class="lt"><span class="dot" style="background:#5EEAD4"></span>Hasil</span></div><iframe class="result-frame"></iframe></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="materi" id="bab3-typography">
+        <div class="materi-head"><h3>CSS Typography: Font, Weight, Style &amp; Alignment</h3><span class="badge-lvl menengah">menengah</span></div>
+        <div class="desc">
+          Materi PDF membahas <code>font-family</code>, <code>font-size</code>, <code>font-weight</code>, <code>font-style</code>,
+          dan <code>text-align</code>. Ukuran font dapat menggunakan ukuran tetap atau relatif, misalnya <code>rem</code>.
+        </div>
+        <div class="lab" data-lab="c-typography">
+          <div class="lab-grid">
+            <div class="lab-pane">
+              <div class="lab-label"><span class="lt"><span class="dot" style="background:var(--css-c)"></span>editor.html</span>
+                <div class="lab-btns"><button class="reset-btn" data-action="reset">Reset</button><button class="run-btn" data-action="run">Jalankan</button></div>
+              </div>
+              <textarea class="code-input" spellcheck="false">&lt;style&gt;
+  /* ✦ Pilih keluarga dan ukuran font */
+  body {
+    font-family: Arial, sans-serif;
+  }
+  .normal { font-size: 1rem; font-weight: normal; }
+  .tebal { font-weight: bold; }
+  .ringan { font-weight: 300; }
+  .miring { font-style: italic; }
+  .kanan { text-align: right; }
+  .tengah { text-align: center; }
+&lt;/style&gt;
+
+&lt;p class="normal"&gt;Teks normal&lt;/p&gt;
+&lt;p class="tebal"&gt;Teks tebal&lt;/p&gt;
+&lt;p class="ringan"&gt;Teks lebih ringan&lt;/p&gt;
+&lt;p class="miring"&gt;Teks miring&lt;/p&gt;
+&lt;p class="kanan"&gt;Teks rata kanan&lt;/p&gt;
+&lt;p class="tengah"&gt;Teks rata tengah&lt;/p&gt;</textarea>
+            </div>
+            <div class="lab-pane"><div class="lab-label"><span class="lt"><span class="dot" style="background:#5EEAD4"></span>Hasil</span></div><iframe class="result-frame"></iframe></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="materi" id="bab3-text">
+        <div class="materi-head"><h3>Text Align, Decoration &amp; Transform</h3><span class="badge-lvl menengah">menengah</span></div>
+        <div class="desc">
+          <code>text-align</code> mengatur posisi horizontal teks. <code>text-decoration</code> mengatur dekorasi seperti underline,
+          overline, line-through, atau none. <code>text-transform</code> mengubah bentuk kapitalisasi teks.
+        </div>
+        <div class="lab" data-lab="c-text">
+          <div class="lab-grid">
+            <div class="lab-pane">
+              <div class="lab-label"><span class="lt"><span class="dot" style="background:var(--css-c)"></span>editor.html</span>
+                <div class="lab-btns"><button class="reset-btn" data-action="reset">Reset</button><button class="run-btn" data-action="run">Jalankan</button></div>
+              </div>
+              <textarea class="code-input" spellcheck="false">&lt;style&gt;
+  /* ✦ Coba setiap jenis dekorasi teks */
+  .kiri { text-align: left; }
+  .kanan { text-align: right; }
+  .tengah { text-align: center; }
+  .underline { text-decoration: underline; }
+  .through { text-decoration: line-through; }
+  .upper { text-transform: uppercase; }
+  .capitalize { text-transform: capitalize; }
+&lt;/style&gt;
+
+&lt;p class="kiri"&gt;Teks rata kiri&lt;/p&gt;
+&lt;p class="kanan"&gt;Teks rata kanan&lt;/p&gt;
+&lt;p class="tengah underline"&gt;Teks rata tengah dan underline&lt;/p&gt;
+&lt;p class="through"&gt;Teks dicoret&lt;/p&gt;
+&lt;p class="upper"&gt;teks menjadi huruf besar&lt;/p&gt;
+&lt;p class="capitalize"&gt;teks menjadi huruf kapital di awal kata&lt;/p&gt;</textarea>
+            </div>
+            <div class="lab-pane"><div class="lab-label"><span class="lt"><span class="dot" style="background:#5EEAD4"></span>Hasil</span></div><iframe class="result-frame"></iframe></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="materi" id="bab3-shadow">
+        <div class="materi-head"><h3>Text Shadow &amp; Box Shadow</h3><span class="badge-lvl lanjut">lanjut</span></div>
+        <div class="desc">
+          <code>text-shadow</code> memberikan bayangan pada teks. <code>box-shadow</code> memberi bayangan pada kotak/elemen dan
+          dapat memakai horizontal offset, vertical offset, blur radius, dan color. Materi PDF juga mencontohkan bayangan dengan transparansi.
+        </div>
+        <div class="lab" data-lab="c-shadow">
+          <div class="lab-grid">
+            <div class="lab-pane">
+              <div class="lab-label"><span class="lt"><span class="dot" style="background:var(--css-c)"></span>editor.html</span>
+                <div class="lab-btns"><button class="reset-btn" data-action="reset">Reset</button><button class="run-btn" data-action="run">Jalankan</button></div>
+              </div>
+              <textarea class="code-input" spellcheck="false">&lt;style&gt;
+  /* ✦ Format: horizontal vertical blur color */
+  .judul {
+    text-shadow: 2px 4px 2px rgba(0,0,0,.35);
+  }
+  .kartu {
+    margin: 20px;
+    padding: 20px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 2px 4px 10px rgba(0,0,0,.25);
+  }
+&lt;/style&gt;
+
+&lt;h2 class="judul"&gt;Text Shadow&lt;/h2&gt;
+&lt;div class="kartu"&gt;Kotak dengan box-shadow&lt;/div&gt;</textarea>
+            </div>
+            <div class="lab-pane"><div class="lab-label"><span class="lt"><span class="dot" style="background:#5EEAD4"></span>Hasil</span></div><iframe class="result-frame"></iframe></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="materi" id="bab3-layout">
+        <div class="materi-head"><h3>Flexbox &amp; CSS Grid</h3><span class="badge-lvl menengah">menengah</span></div>
+        <div class="desc">
+          Flexbox digunakan untuk menyusun item secara fleksibel pada satu arah, sedangkan CSS Grid menyediakan tata letak dua dimensi.
+          Materi PDF mengenalkan <code>display:grid</code>, grid container, garis grid, area, serta template rows dan columns.
+        </div>
+        <div class="lab" data-lab="c-layout">
+          <div class="lab-grid">
+            <div class="lab-pane">
+              <div class="lab-label"><span class="lt"><span class="dot" style="background:var(--css-c)"></span>editor.html</span>
+                <div class="lab-btns"><button class="reset-btn" data-action="reset">Reset</button><button class="run-btn" data-action="run">Jalankan</button></div>
+              </div>
+              <textarea class="code-input" spellcheck="false">&lt;style&gt;
+  /* ✦ Flexbox: satu arah */
+  .flex {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 18px;
+  }
+
+  /* ✦ Grid: dua dimensi */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: auto auto;
+    gap: 8px;
+  }
+
+  .item {
+    padding: 18px;
+    text-align: center;
+    background: #bfdbfe;
+    border-radius: 8px;
+  }
+&lt;/style&gt;
+
+&lt;div class="flex"&gt;
+  &lt;div class="item"&gt;Flex 1&lt;/div&gt;
+  &lt;div class="item"&gt;Flex 2&lt;/div&gt;
+  &lt;div class="item"&gt;Flex 3&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div class="grid"&gt;
+  &lt;div class="item"&gt;Grid 1&lt;/div&gt;
+  &lt;div class="item"&gt;Grid 2&lt;/div&gt;
+  &lt;div class="item"&gt;Grid 3&lt;/div&gt;
+  &lt;div class="item"&gt;Grid 4&lt;/div&gt;
+  &lt;div class="item"&gt;Grid 5&lt;/div&gt;
+  &lt;div class="item"&gt;Grid 6&lt;/div&gt;
+&lt;/div&gt;</textarea>
+            </div>
+            <div class="lab-pane"><div class="lab-label"><span class="lt"><span class="dot" style="background:#5EEAD4"></span>Hasil</span></div><iframe class="result-frame"></iframe></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="materi" id="bab3-responsif">
+        <div class="materi-head"><h3>Prinsip Web Responsif: Fluid Grids, Media Queries, Responsive Media &amp; Viewport</h3><span class="badge-lvl menengah">menengah</span></div>
+        <div class="desc">
+          Materi PDF menjelaskan <strong>fluid grids</strong>, <strong>media queries</strong>, <strong>responsive media</strong>,
+          dan <strong>viewport meta tag</strong>. Contoh media query menggunakan breakpoint, sedangkan gambar responsif dapat
+          memakai <code>max-width:100%</code> dan <code>height:auto</code>.
+        </div>
+        <div class="lab" data-lab="c-responsif">
+          <div class="lab-grid">
+            <div class="lab-pane">
+              <div class="lab-label"><span class="lt"><span class="dot" style="background:var(--css-c)"></span>editor.html</span>
+                <div class="lab-btns"><button class="reset-btn" data-action="reset">Reset</button><button class="run-btn" data-action="run">Jalankan</button></div>
+              </div>
+              <textarea class="code-input" spellcheck="false">&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+
+&lt;style&gt;
+  /* ✦ Fluid grid menggunakan ukuran relatif */
+  .kartu {
+    width: 80%;
+    margin: auto;
+    padding: 20px;
+    background: #dcfce7;
+    text-align: center;
+  }
+
+  /* ✦ Media query untuk layar kecil */
+  @media only screen and (max-width: 600px) {
+    .kartu {
+      background: #fecaca;
+      font-size: 13px;
+    }
+  }
+
+  /* ✦ Media responsif */
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+&lt;/style&gt;
+
+&lt;div class="kartu"&gt;Perkecil lebar panel hasil untuk menguji responsive design.&lt;/div&gt;
+&lt;img src="https://picsum.photos/seed/responsive/520/180" alt="Contoh gambar responsif"&gt;</textarea>
+            </div>
+            <div class="lab-pane"><div class="lab-label"><span class="lt"><span class="dot" style="background:#5EEAD4"></span>Hasil</span></div><iframe class="result-frame"></iframe></div>
+          </div>
+        </div>
+        <div class="note-box info"><b>Viewport:</b> pada HTML, <code>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</code> membantu browser perangkat mobile menggunakan lebar perangkat sebagai lebar layout.</div>
+      </article>
+
+      <article class="materi" id="bab3-navbar">
+        <div class="materi-head"><h3>CSS pada Navbar: Vertikal, Horizontal, Dropdown &amp; Toggle</h3><span class="badge-lvl lanjut">lanjut</span></div>
+        <div class="desc">
+          Materi PDF membahas navbar vertikal, horizontal, dropdown, toggle menu, dan navbar vertikal responsif. Prinsip dasarnya
+          menggunakan flexbox, positioning, hover, serta media query.
+        </div>
+        <div class="lab" data-lab="c-navbar">
+          <div class="lab-grid">
+            <div class="lab-pane">
+              <div class="lab-label"><span class="lt"><span class="dot" style="background:var(--css-c)"></span>editor.html</span>
+                <div class="lab-btns"><button class="reset-btn" data-action="reset">Reset</button><button class="run-btn" data-action="run">Jalankan</button></div>
+              </div>
+              <textarea class="code-input" spellcheck="false">&lt;style&gt;
+  /* ✦ Reset sederhana */
+  * { box-sizing: border-box; }
+  nav {
+    background: #333;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+  }
+  .links {
+    display: flex;
+    list-style: none;
+    gap: 18px;
+    margin: 0;
+    padding: 0;
+  }
+  .links a {
+    color: white;
+    text-decoration: none;
+    padding: 10px;
+  }
+  .links a:hover { color: #93c5fd; }
+
+  /* ✦ Dropdown */
+  .dropdown { position: relative; }
+  .dropdown-content {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    min-width: 150px;
+    background: #333;
+    box-shadow: 0 8px 16px rgba(0,0,0,.2);
+  }
+  .dropdown:hover .dropdown-content { display: block; }
+  .dropdown-content a { display: block; }
+
+  /* ✦ Toggle pada layar kecil */
+  .toggle { display: none; }
+  @media (max-width: 768px) {
+    .links { display: none; flex-direction: column; width: 100%; }
+    .toggle { display: block; cursor: pointer; }
+    .nav:hover .links { display: flex; }
+  }
+&lt;/style&gt;
+
+&lt;nav class="nav"&gt;
+  &lt;strong&gt;MyWebsite&lt;/strong&gt;
+  &lt;button class="toggle"&gt;☰ Menu&lt;/button&gt;
+  &lt;ul class="links"&gt;
+    &lt;li&gt;&lt;a href="#"&gt;Home&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="#"&gt;About&lt;/a&gt;&lt;/li&gt;
+    &lt;li class="dropdown"&gt;
+      &lt;a href="#"&gt;Services ▾&lt;/a&gt;
+      &lt;div class="dropdown-content"&gt;
+        &lt;a href="#"&gt;Web Design&lt;/a&gt;
+        &lt;a href="#"&gt;SEO&lt;/a&gt;
+        &lt;a href="#"&gt;Marketing&lt;/a&gt;
+      &lt;/div&gt;
+    &lt;/li&gt;
+    &lt;li&gt;&lt;a href="#"&gt;Contact&lt;/a&gt;&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/nav&gt;</textarea>
+            </div>
+            <div class="lab-pane"><div class="lab-label"><span class="lt"><span class="dot" style="background:#5EEAD4"></span>Hasil</span></div><iframe class="result-frame"></iframe></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="materi" id="bab3-header">
+        <div class="materi-head"><h3>CSS pada Header Layout</h3><span class="badge-lvl lanjut">lanjut</span></div>
+        <div class="desc">
+          Header dapat memuat judul, logo, banner, atau informasi lain. Materi PDF mencontohkan penggunaan
+          <code>background-image</code>, <code>background-position</code>, <code>padding</code>, <code>color</code>, <code>font-size</code>,
+          dan border pada judul.
+        </div>
+        <div class="lab" data-lab="c-header">
+          <div class="lab-grid">
+            <div class="lab-pane">
+              <div class="lab-label"><span class="lt"><span class="dot" style="background:var(--css-c)"></span>editor.html</span>
+                <div class="lab-btns"><button class="reset-btn" data-action="reset">Reset</button><button class="run-btn" data-action="run">Jalankan</button></div>
+              </div>
+              <textarea class="code-input" spellcheck="false">&lt;style&gt;
+  /* ✦ Header dengan background image */
+  .header {
+    padding: 70px 20px;
+    text-align: center;
+    background-image: url("https://picsum.photos/seed/header/900/280");
+    background-position: center;
+    background-size: cover;
+    color: white;
+  }
+  .header h1 {
+    border: 2px solid white;
+    padding: 5px;
+    width: 55%;
+    margin: auto;
+  }
+&lt;/style&gt;
+
+&lt;header class="header"&gt;
+  &lt;h1&gt;Bagian Header&lt;/h1&gt;
+  &lt;p&gt;Belajar Membuat Header Sederhana&lt;/p&gt;
+&lt;/header&gt;</textarea>
+            </div>
+            <div class="lab-pane"><div class="lab-label"><span class="lt"><span class="dot" style="background:#5EEAD4"></span>Hasil</span></div><iframe class="result-frame"></iframe></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="materi" id="bab3-body-layout">
+        <div class="materi-head"><h3>CSS pada Body Layout &amp; Grid Template Areas</h3><span class="badge-lvl lanjut">lanjut</span></div>
+        <div class="desc">
+          Body dapat disusun menjadi area navbar, header, sidebar, content, dan footer. Materi PDF mencontohkan
+          <code>grid-template-areas</code>, <code>grid-template-columns</code>, <code>grid-template-rows</code>, <code>min-height</code>,
+          serta gap untuk membuat layout halaman.
+        </div>
+        <div class="lab" data-lab="c-body">
+          <div class="lab-grid">
+            <div class="lab-pane">
+              <div class="lab-label"><span class="lt"><span class="dot" style="background:var(--css-c)"></span>editor.html</span>
+                <div class="lab-btns"><button class="reset-btn" data-action="reset">Reset</button><button class="run-btn" data-action="run">Jalankan</button></div>
+              </div>
+              <textarea class="code-input" spellcheck="false">&lt;style&gt;
+  /* ✦ Grid area memetakan bagian halaman */
+  .page {
+    display: grid;
+    grid-template-areas:
+      "navbar navbar"
+      "header header"
+      "sidebar content"
+      "footer footer";
+    grid-template-columns: 180px 1fr;
+    grid-template-rows: auto auto 1fr auto;
+    min-height: 280px;
+    gap: 6px;
+  }
+  .page &gt; div { padding: 10px; }
+  .navbar { grid-area: navbar; background: #333; color: white; }
+  .header { grid-area: header; background: #dbeafe; }
+  .sidebar { grid-area: sidebar; background: #e2e8f0; }
+  .content { grid-area: content; background: #f8fafc; }
+  .footer { grid-area: footer; background: #333; color: white; }
+&lt;/style&gt;
+
+&lt;div class="page"&gt;
+  &lt;div class="navbar"&gt;Navbar&lt;/div&gt;
+  &lt;div class="header"&gt;Header&lt;/div&gt;
+  &lt;div class="sidebar"&gt;Sidebar&lt;/div&gt;
+  &lt;div class="content"&gt;Content utama&lt;/div&gt;
+  &lt;div class="footer"&gt;Footer&lt;/div&gt;
+&lt;/div&gt;</textarea>
+            </div>
+            <div class="lab-pane"><div class="lab-label"><span class="lt"><span class="dot" style="background:#5EEAD4"></span>Hasil</span></div><iframe class="result-frame"></iframe></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="materi" id="bab3-forms">
+        <div class="materi-head"><h3>CSS Forms</h3><span class="badge-lvl lanjut">lanjut</span></div>
+        <div class="desc">
+          Materi PDF mencontohkan form dengan input teks, select, dan tombol. CSS digunakan agar form lebih rapi melalui
+          font, padding, margin, border, border-radius, dan hover.
+        </div>
+        <div class="lab" data-lab="c-forms">
+          <div class="lab-grid">
+            <div class="lab-pane">
+              <div class="lab-label"><span class="lt"><span class="dot" style="background:var(--css-c)"></span>editor.html</span>
+                <div class="lab-btns"><button class="reset-btn" data-action="reset">Reset</button><button class="run-btn" data-action="run">Jalankan</button></div>
+              </div>
+              <textarea class="code-input" spellcheck="false">&lt;style&gt;
+  /* ✦ Dasar styling form */
+  body { font-family: Verdana, sans-serif; }
+  form { width: 100%; max-width: 360px; margin: auto; }
+  input, select, button {
+    width: 100%;
+    padding: 12px;
+    margin: 6px 0;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    box-sizing: border-box;
+  }
+  button {
+    background: #4CAF50;
+    color: white;
+    cursor: pointer;
+  }
+  button:hover { background: #45a049; }
+&lt;/style&gt;
+
+&lt;form onsubmit="return false;"&gt;
+  &lt;label for="nama"&gt;Nama&lt;/label&gt;
+  &lt;input id="nama" type="text" placeholder="Your name"&gt;
+
+  &lt;label for="negara"&gt;Country&lt;/label&gt;
+  &lt;select id="negara"&gt;
+    &lt;option&gt;Indonesia&lt;/option&gt;
+    &lt;option&gt;Jepang&lt;/option&gt;
+    &lt;option&gt;Singapura&lt;/option&gt;
+  &lt;/select&gt;
+
+  &lt;button type="submit"&gt;Submit&lt;/button&gt;
+&lt;/form&gt;</textarea>
+            </div>
+            <div class="lab-pane"><div class="lab-label"><span class="lt"><span class="dot" style="background:#5EEAD4"></span>Hasil</span></div><iframe class="result-frame"></iframe></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="materi" id="bab3-position">
+        <div class="materi-head"><h3>Position &amp; Penempatan Elemen</h3><span class="badge-lvl lanjut">lanjut</span></div>
+        <div class="desc">
+          Gunakan <code>position</code> untuk menentukan bagaimana elemen ditempatkan. Nilai seperti <code>relative</code>,
+          <code>absolute</code>, <code>fixed</code>, dan <code>sticky</code> dipadukan dengan <code>top</code>, <code>right</code>,
+          <code>bottom</code>, atau <code>left</code>.
+        </div>
+        <div class="lab" data-lab="c-position">
+          <div class="lab-grid">
+            <div class="lab-pane">
+              <div class="lab-label"><span class="lt"><span class="dot" style="background:var(--css-c)"></span>editor.html</span>
+                <div class="lab-btns"><button class="reset-btn" data-action="reset">Reset</button><button class="run-btn" data-action="run">Jalankan</button></div>
+              </div>
+              <textarea class="code-input" spellcheck="false">&lt;style&gt;
+  /* ✦ Relative menjadi acuan posisi anak */
+  .wadah {
+    position: relative;
+    height: 170px;
+    padding: 20px;
+    background: #e2e8f0;
+  }
+  .label {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    padding: 10px;
+    background: #2563eb;
+    color: white;
+  }
+&lt;/style&gt;
+
+&lt;div class="wadah"&gt;
+  Wadah dengan position: relative
+  &lt;span class="label"&gt;absolute&lt;/span&gt;
+&lt;/div&gt;</textarea>
+            </div>
+            <div class="lab-pane"><div class="lab-label"><span class="lt"><span class="dot" style="background:#5EEAD4"></span>Hasil</span></div><iframe class="result-frame"></iframe></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="materi" id="bab3-footer">
+        <div class="materi-head"><h3>CSS pada Footer Layout</h3><span class="badge-lvl lanjut">lanjut</span></div>
+        <div class="desc">
+          Footer menjadi bagian bawah halaman. Materi PDF memperlihatkan pengaturan warna, padding, ukuran teks, transform,
+          dan hover pada tautan footer.
+        </div>
+        <div class="lab" data-lab="c-footer">
+          <div class="lab-grid">
+            <div class="lab-pane">
+              <div class="lab-label"><span class="lt"><span class="dot" style="background:var(--css-c)"></span>editor.html</span>
+                <div class="lab-btns"><button class="reset-btn" data-action="reset">Reset</button><button class="run-btn" data-action="run">Jalankan</button></div>
+              </div>
+              <textarea class="code-input" spellcheck="false">&lt;style&gt;
+  /* ✦ Footer halaman */
+  .footer {
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+    background: #222;
+    color: white;
+    text-align: center;
+  }
+  .footer a {
+    color: #fff;
+    margin: 0 8px;
+    text-decoration: none;
+    transition: transform .3s ease;
+  }
+  .footer a:hover {
+    transform: scale(1.1);
+  }
+&lt;/style&gt;
+
+&lt;footer class="footer"&gt;
+  &copy; 2026 Belajar Pemrograman Web &middot;
+  &lt;a href="#"&gt;Instagram&lt;/a&gt;
+  &lt;a href="#"&gt;YouTube&lt;/a&gt;
+&lt;/footer&gt;</textarea>
+            </div>
+            <div class="lab-pane"><div class="lab-label"><span class="lt"><span class="dot" style="background:#5EEAD4"></span>Hasil</span></div><iframe class="result-frame"></iframe></div>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <!-- ======================================================= -->
+    <!-- BAB 4 — JAVASCRIPT                                       -->
+    <!-- ======================================================= -->
+    <section class="bab" id="bab4" style="--bab-glow:#E8C547">
+      <div class="bab-head">
+        <span class="bnum">Bab 04</span>
+        <h2>JavaScript — Membuat Web Interaktif</h2>
+        <p>JavaScript menghidupkan halaman web: merespons klik, mengubah isi halaman secara dinamis, memvalidasi form, hingga mengambil data dari server.</p>
+      </div>
+
+      <article class="materi" id="bab4-dasar">
+        <div class="materi-head"><h3>Konsep Dasar JavaScript</h3><span class="badge-lvl dasar">dasar</span></div>
+        <div class="desc">
+          Kode JavaScript ditulis di dalam tag <code>&lt;script&gt;</code>. Perintah paling dasar untuk menampilkan
+          sesuatu ke halaman adalah <code>document.write()</code>, sedangkan <code>console.log()</code> menampilkan pesan
+          ke console browser (untuk keperluan debug/pengecekan).
+        </div>
+        <div class="lab" data-lab="j-dasar">
+          <div class="lab-grid">
+            <div class="lab-pane">
+              <div class="lab-label"><span class="lt"><span class="dot" style="background:var(--js-c)"></span>editor.html</span>
+                <div class="lab-btns"><button class="reset-btn" data-action="reset">Reset</button><button class="run-btn" data-action="run">Jalankan</button></div>
+              </div>
+              <textarea class="code-input" spellcheck="false">&lt;!-- ✦ Komentar: bagian input ini dapat diedit, lalu tekan Jalankan untuk melihat output. --&gt;
+&lt;h3 id="judul"&gt;Judul Awal&lt;/h3&gt;
+
+&lt;script&gt;
+  document.getElementById("judul").innerText = "Diubah oleh JavaScript!";
+  console.log("Skrip berhasil berjalan");
+&lt;/script&gt;</textarea>
+            </div>
+            <div class="lab-pane">
+              <div class="lab-label"><span class="lt"><span class="dot" style="background:#5EEAD4"></span>Hasil</span></div>
+              <iframe class="result-frame"></iframe>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="materi" id="bab4-variabel">
+        <div class="materi-head"><h3>Variabel, Tipe Data &amp; Operator</h3><span class="badge-lvl dasar">dasar</span></div>
+        <div class="desc">
+          Variabel dideklarasikan dengan <code>let</code> (bisa diubah), <code>const</code> (tetap), atau <code>var</code> (cara lama).
+          Tipe data dasar: <em>string</em> (teks), <em>number</em> (angka), <em>boolean</em> (benar/salah).
+          Operator umum: <code>+ - * /</code> (aritmatika), <code>== === &gt; &lt;</code> (perbandingan).
+        </div>
+        <div class="lab" data-lab="j-variabel">
+          <div class="lab-grid">
+            <div class="lab-pane">
+              <div class="lab-label"><span class="lt"><span class="dot" style="background:var(--js-c)"></span>editor.html</span>
+                <div class="lab-btns"><button class="reset-btn" data-action="reset">Reset</button><button class="run-btn" data-action="run">Jalankan</button></div>
+              </div>
+              <textarea class="code-input" spellcheck="false">&lt;!-- ✦ Komentar: bagian input ini dapat diedit, lalu tekan Jalankan untuk melihat output. --&gt;
+&lt;div id="output" style="font-family:sans-serif;"&gt;&lt;/div&gt;
+
+&lt;script&gt;
+  let nama = "Ahmad";
+  let umur = 17;
+  const sekolah = "SMK Sunan Drajat";
+  let sudahLulus = false;
+
+  let hasil = `Nama: ${nama}&lt;br&gt;
+    Umur: ${umur} tahun&lt;br&gt;
+    Sekolah: ${sekolah}&lt;br&gt;
+    Status lulus: ${sudahLulus}&lt;br&gt;
+    Umur + 5 tahun: ${umur + 5}`;
+
+  document.getElementById("output").innerHTML = hasil;
+&lt;/script&gt;</textarea>
+            </div>
+            <div class="lab-pane">
+              <div class="lab-label"><span class="lt"><span class="dot" style="background:#5EEAD4"></span>Hasil</span></div>
+              <iframe class="result-frame"></iframe>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="materi" id="bab4-percabangan">
+        <div class="materi-head"><h3>Percabangan (Kondisi)</h3><span class="badge-lvl menengah">menengah</span></div>
+        <div class="desc">
+          <code>if / else if / else</code> menjalankan kode berbeda tergantung kondisinya benar atau salah.
+          Ada juga <code>switch</code> untuk banyak kemungkinan nilai sekaligus.
+        </div>
+        <div class="lab" data-lab="j-percabangan">
+          <div class="lab-grid">
+            <div class="lab-pane">
+              <div class="lab-label"><span class="lt"><span class="dot" style="background:var(--js-c)"></span>editor.html</span>
+                <div class="lab-btns"><button class="reset-btn" data-action="reset">Reset</button><button class="run-btn" data-action="run">Jalankan</button></div>
+              </div>
+              <textarea class="code-input" spellcheck="false">&lt;!-- ✦ Komentar: bagian input ini dapat diedit, lalu tekan Jalankan untuk melihat output. --&gt;
+&lt;div id="output" style="font-family:sans-serif;"&gt;&lt;/div&gt;
+
+&lt;script&gt;
+  let nilai = 78;
+  let keterangan = "";
+
+  if (nilai &gt;= 90) {
+    keterangan = "Sangat Baik (A)";
+  } else if (nilai &gt;= 75) {
+    keterangan = "Baik (B)";
+  } else if (nilai &gt;= 60) {
+    keterangan = "Cukup (C)";
+  } else {
+    keterangan = "Perlu Belajar Lagi (D)";
+  }
+
+  document.getElementById("output").innerHTML =
+    "Nilai: " + nilai + "&lt;br&gt;Keterangan: " + keterangan;
+&lt;/script&gt;</textarea>
+            </div>
+            <div class="lab-pane">
+              <div class="lab-label"><span class="lt"><span class="dot" style="background:#5EEAD4"></span>Hasil</span></div>
+              <iframe class="result-frame"></iframe>
+            </div>
+          </div>
+        </div>
+        <div class="note-box"><b>Coba:</b> ubah nilai variabel <code>nilai</code> menjadi 95, 65, atau 40, lalu jalankan lagi untuk melihat keterangan yang berbeda.</div>
+      </article>
+
+      <article class="materi" id="bab4-perulangan">
+        <div class="materi-head"><h3>Perulangan</h3><span class="badge-lvl menengah">menengah</span></div>
+        <div class="desc">
+          <code>for</code> mengulang kode sebanyak jumlah tertentu, sedangkan <code>while</code> mengulang selama kondisi masih benar.
+          Perulangan sangat berguna untuk memproses data dalam jumlah banyak tanpa menulis kode berulang-ulang.
+        </div>
+        <div class="lab" data-lab="j-perulangan">
+          <div class="lab-grid">
+            <div class="lab-pane">
+              <div class="lab-label"><span class="lt"><span class="dot" style="background:var(--js-c)"></span>editor.html</span>
+                <div class="lab-btns"><button class="reset-btn" data-action="reset">Reset</button><button class="run-btn" data-action="run">Jalankan</button></div>
+              </div>
+              <textarea class="code-input" spellcheck="false">&lt;!-- ✦ Komentar: bagian input ini dapat diedit, lalu tekan Jalankan untuk melihat output. --&gt;
+&lt;div id="output" style="font-family:sans-serif;"&gt;&lt;/div&gt;
+
+&lt;script&gt;
+  let teks = "&lt;b&gt;Perulangan for (1 sampai 5):&lt;/b&gt;&lt;br&gt;";
+  for (let i = 1; i &lt;= 5; i++) {
+    teks += "Baris ke-" + i + "&lt;br&gt;";
+  }
+
+  teks += "&lt;br&gt;&lt;b&gt;Perulangan while (hitung mundur):&lt;/b&gt;&lt;br&gt;";
+  let hitung = 3;
+  while (hitung &gt; 0) {
+    teks += hitung + "... &lt;br&gt;";
+    hitung--;
+  }
+  teks += "Selesai!";
+
+  document.getElementById("output").innerHTML = teks;
+&lt;/script&gt;</textarea>
+            </div>
+            <div class="lab-pane">
+              <div class="lab-label"><span class="lt"><span class="dot" style="background:#5EEAD4"></span>Hasil</span></div>
+              <iframe class="result-frame"></iframe>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="materi" id="bab4-array">
+        <div class="materi-head"><h3>Array &amp; Fungsi</h3><span class="badge-lvl menengah">menengah</span></div>
+        <div class="desc">
+          Array menyimpan banyak nilai dalam satu variabel, misalnya <code>let buah = ["Apel","Jeruk"]</code>.
+          Fungsi (<code>function</code>) mengelompokkan kode yang bisa dipanggil ulang kapan saja dengan nama tertentu.
+        </div>
+        <div class="lab" data-lab="j-array">
+          <div class="lab-grid">
+            <div class="lab-pane">
+              <div class="lab-label"><span class="lt"><span class="dot" style="background:var(--js-c)"></span>editor.html</span>
+                <div class="lab-btns"><button class="reset-btn" data-action="reset">Reset</button><button class="run-btn" data-action="run">Jalankan</button></div>
+              </div>
+              <textarea class="code-input" spellcheck="false">&lt;!-- ✦ Komentar: bagian input ini dapat diedit, lalu tekan Jalankan untuk melihat output. --&gt;
+&lt;div id="output" style="font-family:sans-serif;"&gt;&lt;/div&gt;
+
+&lt;script&gt;
+  let jaringan = ["LAN", "WAN", "MAN", "PAN"];
+
+  function tampilkanDaftar(arr) {
+    let hasil = "&lt;ul&gt;";
+    for (let i = 0; i &lt; arr.length; i++) {
+      hasil += "&lt;li&gt;" + arr[i] + "&lt;/li&gt;";
+    }
+    hasil += "&lt;/ul&gt;";
+    return hasil;
+  }
+
+  document.getElementById("output").innerHTML =
+    "&lt;b&gt;Jenis-jenis jaringan:&lt;/b&gt;" + tampilkanDaftar(jaringan) +
+    "Total: " + jaringan.length + " jenis";
+&lt;/script&gt;</textarea>
+            </div>
+            <div class="lab-pane">
+              <div class="lab-label"><span class="lt"><span class="dot" style="background:#5EEAD4"></span>Hasil</span></div>
+              <iframe class="result-frame"></iframe>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="materi" id="bab4-dom">
+        <div class="materi-head"><h3>Document Object Model (DOM)</h3><span class="badge-lvl lanjut">lanjut</span></div>
+        <div class="desc">
+          DOM adalah cara JavaScript "melihat" dan mengubah elemen HTML sebagai objek. Perintah seperti
+          <code>document.getElementById()</code> dan <code>document.querySelector()</code> dipakai untuk menemukan elemen,
+          lalu mengubah isi, gaya, atau atributnya.
+        </div>
+        <div class="lab" data-lab="j-dom">
+          <div class="lab-grid">
+            <div class="lab-pane">
+              <div class="lab-label"><span class="lt"><span class="dot" style="background:var(--js-c)"></span>editor.html</span>
+                <div class="lab-btns"><button class="reset-btn" data-action="reset">Reset</button><button class="run-btn" data-action="run">Jalankan</button></div>
+              </div>
+              <textarea class="code-input" spellcheck="false">&lt;!-- ✦ Komentar: bagian input ini dapat diedit, lalu tekan Jalankan untuk melihat output. --&gt;
+&lt;p id="kotak" style="padding:14px;background:#eee;font-family:sans-serif;"&gt;
+  Kotak ini akan diubah lewat DOM
+&lt;/p&gt;
+
+&lt;script&gt;
+  let elemen = document.getElementById("kotak");
+  elemen.innerText = "Isinya sudah diganti lewat DOM!";
+  elemen.style.background = "#bbf7d0";
+  elemen.style.color = "#166534";
+  elemen.style.fontWeight = "bold";
+&lt;/script&gt;</textarea>
+            </div>
+            <div class="lab-pane">
+              <div class="lab-label"><span class="lt"><span class="dot" style="background:#5EEAD4"></span>Hasil</span></div>
+              <iframe class="result-frame"></iframe>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="materi" id="bab4-event">
+        <div class="materi-head"><h3>Event Handling</h3><span class="badge-lvl lanjut">lanjut</span></div>
+        <div class="desc">
+          Event adalah kejadian seperti klik, hover, atau ketik. Dengan <code>addEventListener()</code>, kita bisa
+          menjalankan fungsi tertentu setiap kali event itu terjadi &mdash; inilah dasar dari semua interaktivitas web.
+        </div>
+        <div class="lab" data-lab="j-event">
+          <div class="lab-grid">
+            <div class="lab-pane">
+              <div class="lab-label"><span class="lt"><span class="dot" style="background:var(--js-c)"></span>editor.html</span>
+                <div class="lab-btns"><button class="reset-btn" data-action="reset">Reset</button><button class="run-btn" data-action="run">Jalankan</button></div>
+              </div>
+              <textarea class="code-input" spellcheck="false">&lt;!-- ✦ Komentar: bagian input ini dapat diedit, lalu tekan Jalankan untuk melihat output. --&gt;
+&lt;button id="tombol" style="padding:10px 18px;font-size:14px;"&gt;Klik saya!&lt;/button&gt;
+&lt;p id="hasil" style="font-family:sans-serif;"&gt;Belum diklik&lt;/p&gt;
+
+&lt;script&gt;
+  let jumlahKlik = 0;
+  let tombol = document.getElementById("tombol");
+  let hasil = document.getElementById("hasil");
+
+  tombol.addEventListener("click", function() {
+    jumlahKlik++;
+    hasil.innerText = "Tombol sudah diklik " + jumlahKlik + " kali";
+  });
+&lt;/script&gt;</textarea>
+            </div>
+            <div class="lab-pane">
+              <div class="lab-label"><span class="lt"><span class="dot" style="background:#5EEAD4"></span>Hasil (coba klik tombolnya)</span></div>
+              <iframe class="result-frame"></iframe>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="materi" id="bab4-async">
+        <div class="materi-head"><h3>Asynchronous JS &amp; AJAX</h3><span class="badge-lvl lanjut">lanjut</span></div>
+        <div class="desc">
+          Asynchronous artinya kode bisa "menunggu" proses lama (seperti mengambil data dari server) tanpa membuat halaman macet.
+          <code>fetch()</code> adalah cara modern untuk mengambil data (biasanya format JSON) dari server lain, menggantikan teknik lama bernama AJAX/XML.
+        </div>
+        <div class="lab" data-lab="j-async">
+          <div class="lab-grid">
+            <div class="lab-pane">
+              <div class="lab-label"><span class="lt"><span class="dot" style="background:var(--js-c)"></span>editor.html</span>
+                <div class="lab-btns"><button class="reset-btn" data-action="reset">Reset</button><button class="run-btn" data-action="run">Jalankan</button></div>
+              </div>
+              <textarea class="code-input" spellcheck="false">&lt;!-- ✦ Komentar: bagian input ini dapat diedit, lalu tekan Jalankan untuk melihat output. --&gt;
+&lt;p id="status" style="font-family:sans-serif;"&gt;Sedang memuat data...&lt;/p&gt;
+
+&lt;script&gt;
+  // Simulasi pengambilan data dari server (asynchronous)
+  // menggunakan setTimeout agar terlihat prosesnya butuh waktu
+  function ambilData() {
+    return new Promise(function(resolve) {
+      setTimeout(function() {
+        resolve({ nama: "Ahmad Fauzan", kelas: "XI TKJ 1" });
+      }, 1500);
+    });
+  }
+
+  ambilData().then(function(data) {
+    document.getElementById("status").innerHTML =
+      "&lt;b&gt;Data diterima dari server:&lt;/b&gt;&lt;br&gt;Nama: " + data.nama +
+      "&lt;br&gt;Kelas: " + data.kelas;
+  });
+&lt;/script&gt;</textarea>
+            </div>
+            <div class="lab-pane">
+              <div class="lab-label"><span class="lt"><span class="dot" style="background:#5EEAD4"></span>Hasil (tunggu 1.5 detik)</span></div>
+              <iframe class="result-frame"></iframe>
+            </div>
+          </div>
+        </div>
+        <div class="note-box info"><b>Di dunia nyata:</b> <code>fetch("https://api.contoh.com/data")</code> dipakai untuk mengambil data sungguhan dari server, misalnya data siswa dari database sekolah, lalu ditampilkan tanpa perlu memuat ulang seluruh halaman.</div>
+      </article>
+    </section>
+
+    <!-- ======================================================= -->
+    <!-- BAB 5 — BASIS DATA (ringkas, konseptual)                 -->
+    <!-- ======================================================= -->
+    <section class="bab" id="bab5" style="--bab-glow:#9D7CE8">
+      <div class="bab-head">
+        <span class="bnum">Bab 05</span>
+        <h2>Basis Data</h2>
+        <p>Website dinamis butuh tempat menyimpan data yang bisa diubah kapan saja tanpa mengedit kode &mdash; di sinilah basis data (database) berperan. Karena database berjalan di server, materi ini bersifat konsep dan contoh kode saja, tanpa live preview.</p>
+      </div>
+
+      <article class="materi" id="bab5-konsep">
+        <div class="materi-head"><h3>Konsep Basis Data</h3><span class="badge-lvl dasar">dasar</span></div>
+        <div class="desc">
+          Basis data adalah kumpulan data yang disusun rapi dalam <strong>tabel</strong>, mirip spreadsheet.
+          Setiap tabel punya <strong>kolom</strong> (field, misalnya nama, umur) dan <strong>baris</strong> (record, satu data lengkap).
+        </div>
+        <table class="attr-table">
+          <tr><th>Istilah</th><th>Analogi Excel</th><th>Contoh</th></tr>
+          <tr><td>Database</td><td>File Excel</td><td>db_sekolah</td></tr>
+          <tr><td>Tabel</td><td>Sheet/lembar kerja</td><td>siswa</td></tr>
+          <tr><td>Kolom (field)</td><td>Judul kolom</td><td>nama, kelas, nilai</td></tr>
+          <tr><td>Baris (record)</td><td>Satu baris data</td><td>1, Ahmad, XI TKJ 1, 90</td></tr>
+        </table>
+      </article>
+
+      <article class="materi" id="bab5-mysql">
+        <div class="materi-head"><h3>Pengenalan MySQL</h3><span class="badge-lvl menengah">menengah</span></div>
+        <div class="desc">
+          <strong>MySQL</strong> adalah salah satu sistem basis data paling populer untuk website, sering dipasangkan dengan PHP.
+          Perintah untuk mengelola data ditulis dalam bahasa <strong>SQL</strong> (Structured Query Language).
+        </div>
+        <div class="lab" data-lab="db-mysql-static">
+          <div class="lab-grid">
+            <div class="lab-pane">
+              <div class="lab-label"><span class="lt"><span class="dot" style="background:var(--db-c)"></span>buat_tabel.sql</span></div>
+              <pre style="margin:0;padding:14px;font-size:12.5px;color:#DCE3F0;overflow:auto;flex:1;">CREATE TABLE siswa (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  nama VARCHAR(50),
+  kelas VARCHAR(20),
+  nilai INT
+);</pre>
+            </div>
+            <div class="lab-pane">
+              <div class="lab-label"><span class="lt"><span class="dot" style="background:var(--db-c)"></span>Ilustrasi tabel</span></div>
+              <div style="padding:14px;overflow:auto;flex:1;background:#0A0E14;">
+                <table style="width:100%;border-collapse:collapse;font-size:12.5px;font-family:var(--mono);">
+                  <tr style="background:#1A2335;"><th style="padding:6px;border:1px solid #232D42;color:#9D7CE8;">id</th><th style="padding:6px;border:1px solid #232D42;color:#9D7CE8;">nama</th><th style="padding:6px;border:1px solid #232D42;color:#9D7CE8;">kelas</th><th style="padding:6px;border:1px solid #232D42;color:#9D7CE8;">nilai</th></tr>
+                  <tr><td style="padding:6px;border:1px solid #232D42;color:#DCE3F0;">1</td><td style="padding:6px;border:1px solid #232D42;color:#DCE3F0;">Ahmad</td><td style="padding:6px;border:1px solid #232D42;color:#DCE3F0;">XI TKJ 1</td><td style="padding:6px;border:1px solid #232D42;color:#DCE3F0;">90</td></tr>
+                  <tr><td style="padding:6px;border:1px solid #232D42;color:#DCE3F0;">2</td><td style="padding:6px;border:1px solid #232D42;color:#DCE3F0;">Siti</td><td style="padding:6px;border:1px solid #232D42;color:#DCE3F0;">XI TKJ 2</td><td style="padding:6px;border:1px solid #232D42;color:#DCE3F0;">85</td></tr>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="materi" id="bab5-crud">
+        <div class="materi-head"><h3>Query CRUD Dasar</h3><span class="badge-lvl lanjut">lanjut</span></div>
+        <div class="desc">
+          CRUD adalah 4 operasi dasar terhadap data: <strong>Create</strong> (tambah), <strong>Read</strong> (baca),
+          <strong>Update</strong> (ubah), <strong>Delete</strong> (hapus).
+        </div>
+        <table class="attr-table">
+          <tr><th>Operasi</th><th>Perintah SQL</th><th>Fungsi</th></tr>
+          <tr><td>Create</td><td>INSERT INTO siswa VALUES (...)</td><td>Menambahkan data baru</td></tr>
+          <tr><td>Read</td><td>SELECT * FROM siswa</td><td>Menampilkan/membaca data</td></tr>
+          <tr><td>Update</td><td>UPDATE siswa SET nilai=95 WHERE id=1</td><td>Mengubah data yang sudah ada</td></tr>
+          <tr><td>Delete</td><td>DELETE FROM siswa WHERE id=1</td><td>Menghapus data</td></tr>
+        </table>
+        <div class="note-box info"><b>Catatan:</b> pada aplikasi nyata, query ini dijalankan lewat bahasa server seperti PHP, lalu hasilnya dikirim ke halaman HTML untuk ditampilkan ke pengguna.</div>
+      </article>
+    </section>
+
+    <!-- ======================================================= -->
+    <!-- BAB 6 — SERVER (ringkas, konseptual)                     -->
+    <!-- ======================================================= -->
+    <section class="bab" id="bab6" style="--bab-glow:#5EEAD4">
+      <div class="bab-head">
+        <span class="bnum">Bab 06</span>
+        <h2>Server</h2>
+        <p>Bab penutup ini menjelaskan tempat website "tinggal" agar bisa diakses banyak orang lewat internet.</p>
+      </div>
+
+      <article class="materi" id="bab6-konsep">
+        <div class="materi-head"><h3>Client vs Server</h3><span class="badge-lvl dasar">dasar</span></div>
+        <div class="desc">
+          <strong>Client</strong> adalah perangkat pengguna (laptop, HP) yang meminta halaman web.
+          <strong>Server</strong> adalah komputer yang menyimpan file website dan mengirimkannya saat diminta.
+          Kode yang berjalan di browser (HTML, CSS, JS) disebut <strong>client-side</strong>; kode yang berjalan di server (PHP, database) disebut <strong>server-side</strong>.
+        </div>
+        <table class="attr-table">
+          <tr><th>Sisi</th><th>Dijalankan di</th><th>Contoh Bahasa</th></tr>
+          <tr><td>Client-side</td><td>Browser pengguna</td><td>HTML, CSS, JavaScript</td></tr>
+          <tr><td>Server-side</td><td>Komputer server</td><td>PHP, Node.js, Python, MySQL</td></tr>
+        </table>
+      </article>
+
+      <article class="materi" id="bab6-webserver">
+        <div class="materi-head"><h3>Web Server &amp; Hosting</h3><span class="badge-lvl menengah">menengah</span></div>
+        <div class="desc">
+          <strong>Web server</strong> adalah program yang bertugas melayani permintaan halaman (misalnya Apache atau Nginx).
+          <strong>Hosting</strong> adalah layanan penyewaan tempat penyimpanan agar website bisa diakses online 24 jam,
+          dan <strong>domain</strong> adalah nama alamat website (seperti <code>sekolahku.sch.id</code>) yang menggantikan alamat IP yang sulit diingat.
+        </div>
+        <table class="attr-table">
+          <tr><th>Istilah</th><th>Penjelasan</th></tr>
+          <tr><td>Localhost</td><td>Server lokal di komputer sendiri, untuk latihan/uji coba (mis. XAMPP)</td></tr>
+          <tr><td>Hosting</td><td>Sewa penyimpanan online supaya website bisa diakses publik</td></tr>
+          <tr><td>Domain</td><td>Nama alamat website yang mudah diingat manusia</td></tr>
+          <tr><td>DNS</td><td>Sistem yang menerjemahkan nama domain menjadi alamat IP server</td></tr>
+        </table>
+        <div class="note-box"><b>Untuk latihan di sekolah:</b> aplikasi seperti <code>XAMPP</code> atau <code>Laragon</code> memungkinkan komputer sendiri berperan sebagai server (localhost), cocok untuk belajar PHP dan MySQL sebelum website diunggah ke hosting sungguhan.</div>
+      </article>
+    </section>
+
+    <!-- ======================================================= -->
+    <!-- TOMBOL KAMUS ATRIBUT — tepat setelah Bab Server          -->
+    <!-- ======================================================= -->
+    <div class="kamus-toggle-wrap">
+      <div class="kamus-label">REFERENSI CEPAT</div>
+      <button class="kamus-toggle-button" id="kamusToggle" type="button" aria-expanded="false" aria-controls="kamus-atribut">
+        <span class="kamus-icon">📚</span>
+        <span>KAMUS ATRIBUT</span>
+        <span class="kamus-toggle-arrow">▼</span>
+      </button>
+      <div class="kamus-hint">Klik tombol ini untuk membuka kamus HTML, CSS, JavaScript, dan SQL.</div>
+      <noscript><a class="kamus-noscript-link" href="#kamus-atribut">Buka Kamus Atribut</a></noscript>
+    </div>
+
+    <!-- ======================================================= -->
+    <!-- KAMUS ATRIBUT                                            -->
+    <!-- ======================================================= -->
+    <section class="kamus-wrap" id="kamus-atribut" hidden>
+      <div class="kamus-hero">
+        <span class="bnum">Referensi Cepat</span>
+        <h2>Kamus Atribut</h2>
+        <p>Daftar referensi <strong>yang tertanam langsung di file HTML ini</strong>, dirangkum dari materi HTML, CSS, JavaScript, dan SQL pada modul. Klik salah satu istilah untuk menuju materi yang paling relevan.</p>
+      </div>
+
+      <div class="kamus-tabs" role="tablist" aria-label="Kategori Kamus Atribut">
+        <button class="kamus-tab active" data-kamus="html" role="tab">HTML</button>
+        <button class="kamus-tab" data-kamus="css" role="tab">CSS</button>
+        <button class="kamus-tab" data-kamus="js" role="tab">JavaScript</button>
+        <button class="kamus-tab" data-kamus="sql" role="tab">SQL</button>
+      </div>
+
+      <div class="kamus-panel active" id="kamus-html">
+        <div class="kamus-panel-head"><h3>HTML — Atribut &amp; Elemen</h3><span>Urut A–Z</span></div>
+        <div class="kamus-grid">
+          <a href="#bab2-form"><b>action</b><span>Menentukan alamat pemroses data form.</span></a>
+          <a href="#bab2-multimedia-gambar"><b>alt</b><span>Teks alternatif pada gambar.</span></a>
+          <a href="#bab2-form"><b>autocomplete</b><span>Mengatur bantuan pengisian otomatis pada form.</span></a>
+          <a href="#bab2-form"><b>checked</b><span>Menandai checkbox/radio sebagai terpilih.</span></a>
+          <a href="#bab2-dasar"><b>class</b><span>Memberi nama kelas yang dapat dipakai CSS/JS.</span></a>
+          <a href="#bab2-tabel"><b>colspan</b><span>Menggabungkan beberapa kolom tabel.</span></a>
+          <a href="#bab2-semantik"><b>content</b><span>Nilai pada meta tertentu, misalnya viewport.</span></a>
+          <a href="#bab2-form"><b>disabled</b><span>Menonaktifkan kontrol form.</span></a>
+          <a href="#bab2-form"><b>enctype</b><span>Menentukan encoding data yang dikirim form.</span></a>
+          <a href="#bab2-form"><b>for</b><span>Menghubungkan label dengan elemen form melalui id.</span></a>
+          <a href="#bab2-multimedia-gambar"><b>height</b><span>Mengatur tinggi media/elemen tertentu.</span></a>
+          <a href="#bab2-hyperlink"><b>href</b><span>Menentukan tujuan tautan.</span></a>
+          <a href="#bab2-dasar"><b>id</b><span>Identitas unik sebuah elemen.</span></a>
+          <a href="#bab2-semantik"><b>lang</b><span>Menentukan bahasa dokumen/elemen.</span></a>
+          <a href="#bab2-form"><b>method</b><span>Menentukan metode pengiriman form, misalnya GET/POST.</span></a>
+          <a href="#bab2-form"><b>name</b><span>Nama kontrol/data form.</span></a>
+          <a href="#bab2-form"><b>placeholder</b><span>Petunjuk teks sementara pada input.</span></a>
+          <a href="#bab2-multimedia-video"><b>poster</b><span>Gambar awal pada video sebelum diputar.</span></a>
+          <a href="#bab2-multimedia-video"><b>preload</b><span>Petunjuk browser tentang pemuatan media.</span></a>
+          <a href="#bab2-multimedia-gambar"><b>rel</b><span>Menjelaskan hubungan resource/link dengan dokumen.</span></a>
+          <a href="#bab2-tabel"><b>rowspan</b><span>Menggabungkan beberapa baris tabel.</span></a>
+          <a href="#bab2-multimedia-gambar"><b>src</b><span>Menentukan sumber gambar/audio/video.</span></a>
+          <a href="#bab2-hyperlink"><b>target</b><span>Menentukan konteks tempat tautan dibuka.</span></a>
+          <a href="#bab2-multimedia-gambar"><b>title</b><span>Informasi tambahan yang biasanya muncul sebagai tooltip.</span></a>
+          <a href="#bab2-form"><b>type</b><span>Menentukan jenis input atau resource tertentu.</span></a>
+          <a href="#bab2-form"><b>value</b><span>Nilai awal/yang dikirim oleh kontrol form.</span></a>
+          <a href="#bab2-multimedia-gambar"><b>width</b><span>Mengatur lebar elemen/media.</span></a>
+        </div>
+      </div>
+
+      <div class="kamus-panel" id="kamus-css">
+        <div class="kamus-panel-head"><h3>CSS — Properti &amp; Nilai</h3><span>Urut A–Z</span></div>
+        <div class="kamus-grid">
+          <a href="#bab3-layout"><b>align-items</b><span>Mengatur posisi item pada sumbu silang Flexbox/Grid.</span></a>
+          <a href="#bab3-text"><b>background</b><span>Shorthand berbagai pengaturan latar.</span></a>
+          <a href="#bab3-colors"><b>background-attachment</b><span>Mengatur apakah background ikut bergerak saat scroll.</span></a>
+          <a href="#bab3-colors"><b>background-color</b><span>Menentukan warna latar.</span></a>
+          <a href="#bab3-colors"><b>background-image</b><span>Menentukan gambar/gradient sebagai latar.</span></a>
+          <a href="#bab3-colors"><b>background-position</b><span>Mengatur posisi gambar latar.</span></a>
+          <a href="#bab3-colors"><b>background-repeat</b><span>Mengatur pengulangan gambar latar.</span></a>
+          <a href="#bab3-colors"><b>background-size</b><span>Mengatur ukuran gambar latar.</span></a>
+          <a href="#bab3-border"><b>border</b><span>Shorthand ketebalan, gaya, dan warna border.</span></a>
+          <a href="#bab3-border"><b>border-radius</b><span>Membulatkan sudut elemen.</span></a>
+          <a href="#bab3-border"><b>border-style</b><span>Menentukan gaya garis border.</span></a>
+          <a href="#bab3-boxmodel"><b>box-sizing</b><span>Mengatur cara browser menghitung ukuran kotak.</span></a>
+          <a href="#bab3-shadow"><b>box-shadow</b><span>Memberi bayangan pada elemen.</span></a>
+          <a href="#bab3-colors"><b>color</b><span>Mengatur warna teks.</span></a>
+          <a href="#bab3-layout"><b>display</b><span>Menentukan model tampilan seperti flex/grid/block.</span></a>
+          <a href="#bab3-layout"><b>flex-direction</b><span>Menentukan arah item Flexbox.</span></a>
+          <a href="#bab3-layout"><b>gap</b><span>Mengatur jarak antar-item layout.</span></a>
+          <a href="#bab3-layout"><b>grid-template-areas</b><span>Mendefinisikan area layout Grid bernama.</span></a>
+          <a href="#bab3-layout"><b>grid-template-columns</b><span>Menentukan ukuran kolom Grid.</span></a>
+          <a href="#bab3-layout"><b>grid-template-rows</b><span>Menentukan ukuran baris Grid.</span></a>
+          <a href="#bab3-boxmodel"><b>height</b><span>Mengatur tinggi elemen.</span></a>
+          <a href="#bab3-text"><b>line-height</b><span>Mengatur tinggi baris teks.</span></a>
+          <a href="#bab3-boxmodel"><b>margin</b><span>Jarak di luar border elemen.</span></a>
+          <a href="#bab3-responsif"><b>max-width</b><span>Membatasi lebar maksimum.</span></a>
+          <a href="#bab3-responsif"><b>min-height</b><span>Menentukan tinggi minimum.</span></a>
+          <a href="#bab3-boxmodel"><b>padding</b><span>Jarak antara content dan border.</span></a>
+          <a href="#bab3-position"><b>position</b><span>Menentukan metode penempatan elemen.</span></a>
+          <a href="#bab3-layout"><b>justify-content</b><span>Mengatur distribusi item pada sumbu utama.</span></a>
+          <a href="#bab3-responsif"><b>@media</b><span>Menerapkan aturan berdasarkan kondisi media/ukuran layar.</span></a>
+          <a href="#bab3-text"><b>text-align</b><span>Mengatur perataan teks.</span></a>
+          <a href="#bab3-shadow"><b>text-shadow</b><span>Memberi bayangan pada teks.</span></a>
+          <a href="#bab3-text"><b>text-decoration</b><span>Mengatur garis/dekorasi teks.</span></a>
+          <a href="#bab3-text"><b>text-transform</b><span>Mengubah kapitalisasi teks.</span></a>
+          <a href="#bab3-position"><b>top</b><span>Offset posisi dari sisi atas.</span></a>
+          <a href="#bab3-position"><b>right</b><span>Offset posisi dari sisi kanan.</span></a>
+          <a href="#bab3-position"><b>bottom</b><span>Offset posisi dari sisi bawah.</span></a>
+          <a href="#bab3-position"><b>left</b><span>Offset posisi dari sisi kiri.</span></a>
+          <a href="#bab3-typography"><b>font-family</b><span>Memilih keluarga font.</span></a>
+          <a href="#bab3-typography"><b>font-size</b><span>Mengatur ukuran teks.</span></a>
+          <a href="#bab3-typography"><b>font-style</b><span>Mengatur gaya normal/italic/oblique.</span></a>
+          <a href="#bab3-typography"><b>font-weight</b><span>Mengatur ketebalan teks.</span></a>
+        </div>
+      </div>
+
+      <div class="kamus-panel" id="kamus-js">
+        <div class="kamus-panel-head"><h3>JavaScript — Keyword, Method &amp; Objek</h3><span>Urut A–Z</span></div>
+        <div class="kamus-grid">
+          <a href="#bab4-async"><b>async</b><span>Menandai fungsi asynchronous.</span></a>
+          <a href="#bab4-array"><b>Array</b><span>Struktur data untuk menyimpan banyak nilai.</span></a>
+          <a href="#bab4-dom"><b>classList</b><span>Mengelola class CSS pada elemen DOM.</span></a>
+          <a href="#bab4-dom"><b>document</b><span>Objek yang merepresentasikan dokumen HTML.</span></a>
+          <a href="#bab4-event"><b>addEventListener</b><span>Mendaftarkan event listener.</span></a>
+          <a href="#bab4-dom"><b>getElementById</b><span>Mencari elemen berdasarkan id.</span></a>
+          <a href="#bab4-dom"><b>innerHTML</b><span>Membaca/menulis isi HTML suatu elemen.</span></a>
+          <a href="#bab4-dom"><b>innerText</b><span>Membaca/menulis teks yang tampil.</span></a>
+          <a href="#bab4-variabel"><b>let</b><span>Mendeklarasikan variabel yang dapat berubah.</span></a>
+          <a href="#bab4-array"><b>map</b><span>Membuat array baru dari hasil pemrosesan tiap elemen.</span></a>
+          <a href="#bab4-variabel"><b>const</b><span>Mendeklarasikan binding yang tidak dapat di-reassign.</span></a>
+          <a href="#bab4-async"><b>Promise</b><span>Objek untuk merepresentasikan hasil operasi asynchronous.</span></a>
+          <a href="#bab4-async"><b>fetch</b><span>Mengirim request dan mengambil resource melalui Fetch API.</span></a>
+          <a href="#bab4-dasar"><b>console.log</b><span>Menulis informasi ke console browser.</span></a>
+          <a href="#bab4-event"><b>preventDefault</b><span>Mencegah aksi default browser pada event.</span></a>
+          <a href="#bab4-async"><b>setTimeout</b><span>Menjalankan fungsi setelah jeda waktu.</span></a>
+          <a href="#bab4-variabel"><b>typeof</b><span>Mengecek tipe nilai.</span></a>
+          <a href="#bab4-percabangan"><b>if</b><span>Menjalankan blok berdasarkan kondisi.</span></a>
+          <a href="#bab4-perulangan"><b>for</b><span>Perulangan dengan inisialisasi, kondisi, dan increment.</span></a>
+          <a href="#bab4-perulangan"><b>while</b><span>Perulangan selama kondisi bernilai benar.</span></a>
+          <a href="#bab4-async"><b>await</b><span>Menunggu Promise dalam fungsi async.</span></a>
+        </div>
+      </div>
+
+      <div class="kamus-panel" id="kamus-sql">
+        <div class="kamus-panel-head"><h3>SQL — Perintah &amp; Klausa</h3><span>Urut A–Z</span></div>
+        <div class="kamus-grid">
+          <a href="#bab5-crud"><b>ALTER TABLE</b><span>Mengubah struktur tabel.</span></a>
+          <a href="#bab5-crud"><b>CREATE DATABASE</b><span>Membuat database.</span></a>
+          <a href="#bab5-crud"><b>CREATE TABLE</b><span>Membuat tabel.</span></a>
+          <a href="#bab5-crud"><b>DELETE</b><span>Menghapus record.</span></a>
+          <a href="#bab5-crud"><b>FROM</b><span>Menentukan sumber tabel pada SELECT.</span></a>
+          <a href="#bab5-crud"><b>INSERT INTO</b><span>Menambahkan data baru.</span></a>
+          <a href="#bab5-mysql"><b>PRIMARY KEY</b><span>Menandai kolom sebagai identitas unik record.</span></a>
+          <a href="#bab5-crud"><b>SELECT</b><span>Membaca atau mengambil data.</span></a>
+          <a href="#bab5-mysql"><b>TABLE</b><span>Objek yang menyimpan data dalam baris dan kolom.</span></a>
+          <a href="#bab5-crud"><b>UPDATE</b><span>Mengubah data yang sudah ada.</span></a>
+          <a href="#bab5-crud"><b>VALUES</b><span>Menentukan nilai yang akan dimasukkan.</span></a>
+          <a href="#bab5-crud"><b>WHERE</b><span>Menyaring baris berdasarkan kondisi.</span></a>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      Modul Belajar Mandiri &middot; Pemrograman Web Dasar &middot; TKJ SMK Sunan Drajat Lamongan
+    </footer>
+  </main>
+</div>
+
+<script>
+(function(){
+
+  /* ---------- decode HTML entities so textarea shows real tags ---------- */
+  function decodeEntities(str){
+    var ta = document.createElement('textarea');
+    ta.innerHTML = str;
+    return ta.value;
+  }
+  document.querySelectorAll('textarea.code-input').forEach(function(ta){
+    ta.value = decodeEntities(ta.value);
+    ta.dataset.original = ta.value; // store for reset
+  });
+
+  /* ---------- colorful code editor overlay ---------- */
+  function esc(s){
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+  function colorize(code){
+    var tokens=[];
+    function token(cls,text){
+      var i=tokens.push('<span class="'+cls+'">'+text+'</span>')-1;
+      return '§§TOK'+i+'§§';
+    }
+    var out=esc(code);
+
+    /* Protect comments and strings first so later regexes never modify generated markup. */
+    out=out.replace(/&lt;!--[\s\S]*?--&gt;/g,function(m){return token('syn-cmt',m);});
+    out=out.replace(/\/\*[\s\S]*?\*\//g,function(m){return token('syn-cmt',m);});
+    out=out.replace(/(^|[\s;])\/\/[^\n]*/g,function(m){return token('syn-cmt',m);});
+    out=out.replace(/(^|\s)--[^\n]*/g,function(m){return token('syn-cmt',m);});
+    out=out.replace(/(&quot;.*?&quot;|&#39;.*?&#39;)/g,function(m){return token('syn-str',m);});
+
+    /* HTML tags and attributes */
+    out=out.replace(/&lt;\/?([a-zA-Z][\w:-]*)([\s\S]*?)\/?&gt;/g,function(_,tag,attrs){
+      var a=attrs.replace(/([\w:-]+)(=)(§§TOK\d+§§)/g,function(__,name,eq,val){
+        return token('syn-attr',name)+eq+val;
+      });
+      return '&lt;'+token('syn-tag',tag)+a+'&gt;';
+    });
+
+    /* CSS properties */
+    out=out.replace(/\b([a-z][a-z-]+)(?=\s*:)/gi,function(m){return token('syn-css-prop',m);});
+
+    /* JavaScript keywords */
+    out=out.replace(/\b(const|let|var|function|return|if|else|for|while|new|class|async|await|try|catch|throw|true|false|null|undefined)\b/g,
+      function(m){return token('syn-js-kw',m);});
+    out=out.replace(/\b(\d+(?:\.\d+)?)\b/g,function(m){return token('syn-js-num',m);});
+
+    /* SQL keywords */
+    out=out.replace(/\b(SELECT|FROM|WHERE|INSERT|INTO|VALUES|UPDATE|SET|DELETE|CREATE|TABLE|DATABASE|ALTER|DROP|PRIMARY|KEY|JOIN|ORDER|GROUP|BY|LIMIT|AND|OR|AS)\b/gi,
+      function(m){return token('syn-sql',m);});
+
+    return out.replace(/§§TOK(\d+)§§/g,function(_,i){return tokens[+i];});
+  }
+  function refreshHighlight(ta){
+    var pre=ta.parentNode.querySelector('.syntax-layer');
+    if(!pre) return;
+    pre.innerHTML=colorize(ta.value)+'\n';
+    pre.scrollTop=ta.scrollTop;
+    pre.scrollLeft=ta.scrollLeft;
+  }
+
+  document.querySelectorAll('textarea.code-input').forEach(function(ta){
+    var wrap=document.createElement('div');
+    wrap.className='code-wrap';
+    ta.parentNode.insertBefore(wrap,ta);
+    wrap.appendChild(ta);
+    var pre=document.createElement('pre');
+    pre.className='syntax-layer';
+    wrap.insertBefore(pre,ta);
+    refreshHighlight(ta);
+    ta.addEventListener('input',function(){refreshHighlight(ta);});
+    ta.addEventListener('scroll',function(){refreshHighlight(ta);});
+  });
+
+  /* ---------- run code into iframe ---------- */
+  function buildHtml(code){
+    return '<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;margin:14px;color:#1a1a1a;font-size:14.5px;line-height:1.6;}</style></head><body>' + code + '</body></html>';
+  }
+  function runLab(lab){
+    var ta = lab.querySelector('textarea.code-input');
+    var frame = lab.querySelector('iframe.result-frame');
+    if(!ta || !frame) return;
+    /* Use srcdoc for broad mobile compatibility; fall back to doc.write */
+    try {
+      frame.srcdoc = buildHtml(ta.value);
+    } catch(e) {
+      try {
+        var doc = frame.contentDocument || frame.contentWindow.document;
+        doc.open(); doc.write(buildHtml(ta.value)); doc.close();
+      } catch(e2){}
+    }
+  }
+
+  function resetLab(lab){
+    var ta = lab.querySelector('textarea.code-input');
+    if(ta){ ta.value = ta.dataset.original; refreshHighlight(ta); }
+    runLab(lab);
+  }
+
+  /* run all labs once on load so results aren't blank */
+  document.querySelectorAll('.lab').forEach(function(lab){
+    runLab(lab);
+  });
+
+  /* button handlers */
+  document.querySelectorAll('.lab').forEach(function(lab){
+    var runBtn = lab.querySelector('[data-action="run"]');
+    var resetBtn = lab.querySelector('[data-action="reset"]');
+    if(runBtn) runBtn.addEventListener('click', function(){ runLab(lab); });
+    if(resetBtn) resetBtn.addEventListener('click', function(){ resetLab(lab); });
+  });
+
+  /* ---------- sidebar: accordion chapters ---------- */
+  document.querySelectorAll('.chapter-head').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var chapter = btn.closest('.chapter');
+      var wasOpen = chapter.classList.contains('open');
+      document.querySelectorAll('.chapter').forEach(function(c){ c.classList.remove('open'); });
+      if(!wasOpen){ chapter.classList.add('open'); }
+    });
+  });
+
+  /* ---------- sidebar: mobile toggle ---------- */
+  var sidebar = document.getElementById('sidebar');
+  var overlay = document.getElementById('overlay');
+  var menuBtn = document.getElementById('menuBtn');
+  function openSidebar(){ sidebar.classList.add('open'); overlay.classList.add('show'); }
+  function closeSidebar(){ sidebar.classList.remove('open'); overlay.classList.remove('show'); }
+  if(menuBtn) menuBtn.addEventListener('click', openSidebar);
+  if(overlay) overlay.addEventListener('click', closeSidebar);
+  document.querySelectorAll('.sub-list a, .chapter-grid a').forEach(function(a){
+    a.addEventListener('click', function(){ closeSidebar(); });
+  });
+
+  /* ---------- active link highlighting + auto-open chapter on scroll ---------- */
+  var subLinks = Array.prototype.slice.call(document.querySelectorAll('.sub-list a'));
+  var materiSections = subLinks.map(function(a){
+    return document.querySelector(a.getAttribute('href'));
+  }).filter(Boolean);
+
+  function updateActiveLink(){
+    var scrollPos = window.scrollY + 140;
+    var currentIndex = -1;
+    materiSections.forEach(function(sec, i){
+      if(sec && sec.offsetTop <= scrollPos){ currentIndex = i; }
+    });
+    subLinks.forEach(function(a){ a.classList.remove('active'); });
+    if(currentIndex >= 0){
+      var activeLink = subLinks[currentIndex];
+      activeLink.classList.add('active');
+      var chapter = activeLink.closest('.chapter');
+      if(chapter && !chapter.classList.contains('open')){
+        document.querySelectorAll('.chapter').forEach(function(c){ c.classList.remove('open'); });
+        chapter.classList.add('open');
+      }
+    }
+  }
+  window.addEventListener('scroll', updateActiveLink, { passive:true });
+  updateActiveLink();
+
+  /* ---------- Kamus Atribut: sidebar shortcut ---------- */
+  var kamusSidebarButton = document.getElementById('kamusSidebarButton');
+  if(kamusSidebarButton){
+    kamusSidebarButton.addEventListener('click', function(e){
+      /* Stop event from bubbling to the chapter-head accordion handler */
+      e.stopPropagation();
+      /* Close sidebar on mobile first */
+      closeSidebar();
+      var btn = document.getElementById('kamusToggle');
+      var sec = document.getElementById('kamus-atribut');
+      if(btn && sec){
+        btn.setAttribute('aria-expanded','true');
+        sec.hidden = false;
+        setTimeout(function(){ sec.scrollIntoView({behavior:'smooth', block:'start'}); }, 80);
+      }
+    });
+  }
+
+  /* ---------- Kamus Atribut: buka/tutup dari tombol setelah Server ---------- */
+  var kamusToggle = document.getElementById('kamusToggle');
+  var kamusSection = document.getElementById('kamus-atribut');
+  if(kamusToggle && kamusSection){
+    kamusToggle.addEventListener('click', function(){
+      var open = kamusToggle.getAttribute('aria-expanded') === 'true';
+      kamusToggle.setAttribute('aria-expanded', String(!open));
+      kamusSection.hidden = open;
+      if(!open){
+        setTimeout(function(){ kamusSection.scrollIntoView({behavior:'smooth', block:'start'}); }, 30);
+      }
+    });
+  }
+
+
+  /* ---------- Kamus Atribut: pastikan item selalu A-Z ---------- */
+  document.querySelectorAll('.kamus-panel .kamus-grid').forEach(function(grid){
+    Array.from(grid.querySelectorAll('a')).sort(function(a,b){
+      var ta = a.querySelector('b'); var tb = b.querySelector('b');
+      if(!ta || !tb) return 0;
+      return ta.textContent.trim().localeCompare(tb.textContent.trim(), 'en', {numeric:true, sensitivity:'base'});
+    }).forEach(function(item){ grid.appendChild(item); });
+  });
+
+  /* ---------- Kamus Atribut tabs ---------- */
+  document.querySelectorAll('.kamus-tab').forEach(function(tab){
+    tab.addEventListener('click',function(){
+      var key=tab.getAttribute('data-kamus');
+      document.querySelectorAll('.kamus-tab').forEach(function(t){t.classList.remove('active');});
+      document.querySelectorAll('.kamus-panel').forEach(function(p){p.classList.remove('active');});
+      tab.classList.add('active');
+      var panel=document.getElementById('kamus-'+key);
+      if(panel) panel.classList.add('active');
+    });
+  });
+
+})();
+</script>
+
+</body>
+</html>
